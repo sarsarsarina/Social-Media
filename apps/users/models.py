@@ -20,12 +20,12 @@ class UserProfile(models.Model):
         ("O", "Other"),
     ]
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.CharField(max_length=200, blank=True)
+    bio = models.CharField(max_length=200, blank=True, null=True)
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
-    website = models.URLField(blank=True)
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True)
+    website = models.URLField(blank=True, null=True)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
     birth_date = models.DateField(blank=True, null=True)
-    location = models.CharField(max_length=50, blank=True)
+    location = models.CharField(max_length=50, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
