@@ -35,9 +35,9 @@ class UserProfile(models.Model):
 
 class Follow(models.Model):
     class Status(models.TextChoices):
-        ACCEPTED = "A"
-        REJECTED = "R"
-        PENDING = "P"
+        ACCEPTED = "A", "Accepted"
+        REJECTED = "R", "Rejected"
+        PENDING = "P", "Pending"
         
     follower = models.ForeignKey(
         "users.User",
