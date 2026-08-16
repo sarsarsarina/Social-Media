@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.conf import settings
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
@@ -19,7 +20,7 @@ class UserProfile(models.Model):
         ("F", "Female"),
         ("O", "Other"),
     ]
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     bio = models.CharField(max_length=200, blank=True, null=True)
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
     website = models.URLField(blank=True, null=True)
@@ -61,5 +62,13 @@ class Follow(models.Model):
     def __str__(self):
         return f"{self.follower},{self.status},{self.following}"
 
+
+class FollowRequest(models.Model):
+    from_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='from_user')
+    to_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='to_user')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.from_user} to {self.to_user} in {self.created_at}'
 
 
