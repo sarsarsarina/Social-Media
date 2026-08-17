@@ -72,3 +72,23 @@ class FollowRequest(models.Model):
         return f'{self.from_user} to {self.to_user} in {self.created_at}'
 
 
+class BlockUser(models.Model):
+     blocker = models.ForeignKey(
+         settings.AUTH_USER_MODEL,
+         on_delete = models.CASCADE,
+         related_name = "blocked"
+     )
+     blocked = models.ForeignKey(
+         settings.AUTH_USER_MODEL,
+         on_delete = models.CASCADE,
+         related_name = "blocker"
+     )
+     restricted_user = models.ForeignKey(
+         settings.AUTH_USER_MODEL,
+         on_delete = models.CASCADE,
+         related_name = "restricted"
+     )
+     created_at = models.DateTimeField(auto_now_add = True)
+     
+     def __str__(self):
+         return f"{self.blocker} blocked {self.blocked} and restricted {self.restricted_user}"
