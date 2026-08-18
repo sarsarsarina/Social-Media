@@ -83,12 +83,25 @@ class BlockUser(models.Model):
          on_delete = models.CASCADE,
          related_name = "blocker"
      )
-     restricted_user = models.ForeignKey(
-         settings.AUTH_USER_MODEL,
-         on_delete = models.CASCADE,
-         related_name = "restricted"
-     )
      created_at = models.DateTimeField(auto_now_add = True)
      
      def __str__(self):
-         return f"{self.blocker} blocked {self.blocked} and restricted {self.restricted_user}"
+         return f"{self.blocker} blocked {self.blocked}"
+
+
+class RestrictUser(models.Model):
+    user = models.ForeignKey(
+         settings.AUTH_USER_MODEL,
+         on_delete = models.CASCADE,
+         related_name = "restricting"
+    )
+    restricted_user = models.ForeignKey(
+         settings.AUTH_USER_MODEL,
+         on_delete = models.CASCADE,
+         related_name = "restricted"
+    )
+    created_at = models.DateTimeField(auto_now_add = True)
+    
+    def __str__(self):
+         return f"{self.user} restricted  {self.restricted_user}"
+
