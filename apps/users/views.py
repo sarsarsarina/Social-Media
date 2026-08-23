@@ -3,10 +3,7 @@ from .serializers import RegisterSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from .services import create_user
-from django.contrib.auth import authenticate
-from .models import User
-from rest_framework_simplejwt.tokens import RefreshToken
-
+from .services import login_user
 
 class RegisterView(APIView):
     def post(self, request):
@@ -26,32 +23,16 @@ class LoginView(APIView):
         username = request.data.get('username')
         password = request.data.get('password')
          
-        if email:
-            user = User.objects.filter(email = email).first()
-            if user:
-                user = authenticate(
-                    username = username,
-                    password = password
-                )
+        user = login_user(
+            email = email,
+            username = username,
+            password = password,
+        )
         
-        elif username:
-            user = authenticate(
-                username = username,
-                password = password
-            )
-        else:
-            user = None
-            
         if user is None:
-            return Response('اطلاعات ورود اشتباه است')
-
+            return Response ('اطلاعات ورود اشتباه است', status = status.HTTP_401_UNAUTHORIZED)
+        
         else:
-            return Response('ورود موفق')
-    
-            refresh = RefreshToken.for_user(user)
-            access = refresh.access_token
-    
-            return Response({
-            "access": str(access),
-            "refresh": str(refresh),
-            })
+            return Response(user)
+            
+        
