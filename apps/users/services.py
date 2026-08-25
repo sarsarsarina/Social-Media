@@ -19,8 +19,8 @@ def create_user(validated_data):
     return data
 
 
-def login_user(email = None, username = None, password = None):
-    user = get_user(email, username)
+def login_user(email_or_username=None, password=None):
+    user = get_user(email_or_username)
 
     if user is None or not user.check_password(password):
         return None
@@ -34,3 +34,15 @@ def login_user(email = None, username = None, password = None):
         "access": str(refresh.access_token),
         "refresh": str(refresh)
     }
+    
+    
+def logout_user(refresh_token):
+    
+    try:
+        token = RefreshToken(refresh_token)
+        token.blacklist()
+        return True  
+
+    except Exception:
+        return False 
+    

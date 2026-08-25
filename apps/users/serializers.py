@@ -23,8 +23,12 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(required=True)
 
     def validate(self, data):
-        if not data.get("email") and not data.get("username"):
+        if not data.get("email_or_username"):
             raise serializers.ValidationError(
                 "Email or username is required."
             )
         return data
+    
+    
+class LogoutSerializer(serializers.Serializer):
+    refresh_token = serializers.CharField(required = True)
