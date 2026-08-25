@@ -19,8 +19,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField(required=False)
-    email = serializers.CharField(required=False)
+    email_or_username = serializers.CharField(required=True)
     password = serializers.CharField(required=True)
 
     def validate(self, data):
