@@ -44,17 +44,11 @@ class LogoutView(APIView):
         serializer = LogoutSerializer(data=request.data)
 
         if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        success = logout_user(**serializer.validated_data)
-
-        if success:
             return Response(
-                {"message": "خروج موفقیت‌آمیز"},
-                status=status.HTTP_200_OK
+                serializer.errors, 
+                status=status.HTTP_400_BAD_REQUEST
             )
 
-        return Response(
-            {"error": "توکن نامعتبر یا منقضی شده است"},
-            status=status.HTTP_400_BAD_REQUEST
+        return Response (
+            logout_user(**serializer.validated_data)
         )

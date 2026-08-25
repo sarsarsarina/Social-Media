@@ -41,8 +41,11 @@ def logout_user(refresh_token):
     try:
         token = RefreshToken(refresh_token)
         token.blacklist()
-        return True  
+        return{
+            "message": "خروج موفقیت‌آمیز"
+        }  
 
     except Exception:
-        return False 
-    
+        return{
+            "error": "توکن نامعتبر یا منقضی شده است"
+        }
