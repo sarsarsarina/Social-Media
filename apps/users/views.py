@@ -3,8 +3,8 @@ from .serializers import RegisterSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from .services import create_user, logout_user
-from .serializers import RegisterSerializer, LoginSerializer, LogoutSerializer
-from .services import login_user
+from .serializers import RegisterSerializer, LoginSerializer, LogoutSerializer, RefreshSerializer
+from .services import login_user,refresh_access_token
 from rest_framework.permissions import IsAuthenticated
 
 class RegisterView(APIView):
@@ -52,3 +52,17 @@ class LogoutView(APIView):
         return Response (
             logout_user(**serializer.validated_data)
         )
+        
+
+class RefreshView(APIView):
+    def post(self, request):
+        serializer = RefreshSerializer(data = request.data)
+        if not serializer.is_valid():
+            return Response(
+                serializer.errors,
+                status = status.HTTP_400_BAD_REQUEST
+            )
+        data = refresh_access_token(
+            serializer.validated_data["refresh_token"]
+        )
+        return Response(data, status = status.HTTP_200_OK)

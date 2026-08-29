@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.tokens import RefreshToken
 from .selectors import get_user
+from rest_framework.exceptions import AuthenticationFailed
 
 User = get_user_model()
 
@@ -49,3 +50,16 @@ def logout_user(refresh_token):
         return{
             "error": "توکن نامعتبر یا منقضی شده است"
         }
+        
+        
+def refresh_access_token(refresh_token):
+    
+    try: 
+        token = RefreshToken(refresh_token)
+        return {
+            "message" : "توکن با موفقیت  رفرش شد",
+            "access_token" : str(token.access_token)
+        }
+    except Exception:
+        raise AuthenticationFailed("رفرش توکن نامعتبر است")
+        
