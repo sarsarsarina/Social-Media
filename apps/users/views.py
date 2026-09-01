@@ -21,37 +21,22 @@ class RegisterView(APIView):
 class LoginView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
-
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        serializer.is_valid(raise_exception=True)
         data = login_user(**serializer.validated_data)
-
-        if data is None:
-            return Response(
-                {'error': 'اطلاعات ورود اشتباه است'},
-                status=status.HTTP_401_UNAUTHORIZED
-            )
-
         return Response(data, status=status.HTTP_200_OK)
-    
 
+        
+
+        
 class LogoutView(APIView):
 
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         serializer = LogoutSerializer(data=request.data)
-
-        if not serializer.is_valid():
-            return Response(
-                serializer.errors, 
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        return Response (
-            logout_user(**serializer.validated_data)
-        )
+        serializer.is_valid(raise_exception=True)
+        data = logout_user(**serializer.validated_data)
+        return Response(data, status = status.HTTP_200_OK)
         
 
 class MyProfileView(APIView):
