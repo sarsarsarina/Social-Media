@@ -3,11 +3,13 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.tokens import RefreshToken
 from .selectors import get_user, get_user_by_id
 from rest_framework.exceptions import AuthenticationFailed
+from .models import UserProfile
 
 User = get_user_model()
 
 def create_user(validated_data):
     user = User.objects.create_user(**validated_data)
+    UserProfile.objects.create(user=user)
 
     refresh = RefreshToken.for_user(user)
     access = refresh.access_token

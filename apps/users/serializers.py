@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from .models import UserProfile
 
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,11 +33,18 @@ class LoginSerializer(serializers.Serializer):
     
 class LogoutSerializer(serializers.Serializer):
     refresh_token = serializers.CharField(required = True)
+
     
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ["bio", "avatar", "website", "gender", "birth_date", "location"]
+
     
 class MyProfileSerializer(serializers.ModelSerializer):
+    userprofile = UserProfileSerializer()
+
     class Meta:
         model = get_user_model()
-        fields = [
-            "id", "username", "email", "phone_number"
-        ]
+        fields = ["id", "username", "email", "phone_number", "userprofile"]
+        
