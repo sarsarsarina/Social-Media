@@ -47,3 +47,14 @@ class MyProfileView(APIView):
         user = get_my_profile(request.user.id)
         serializer = MyProfileSerializer(user)
         return Response(serializer.data)
+    
+    
+class UserProfileView(APIView):
+    
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, user_id):
+        profile = get_user_profile(user_id)
+        serializer = UserProfileSerializer(profile)
+        return Response(serializer.data)
+        

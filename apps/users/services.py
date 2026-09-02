@@ -52,3 +52,16 @@ def logout_user(refresh_token):
         
 def get_my_profile(user_id):
     return User.objects.select_related("userprofile").filter(id=user_id).first()
+
+
+def get_user_profile(user_id):
+    
+    user = get_user_by_id(user_id)
+    if not user:
+        raise NotFound("User not found")
+    
+    profile = get_user_profile_by_id(user_id)
+    if not profile:
+        raise NotFound("Profile not found")
+    
+    return profile

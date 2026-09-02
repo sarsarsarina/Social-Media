@@ -49,3 +49,10 @@ class MyProfileSerializer(serializers.ModelSerializer):
         fields = ["id", "username", "email", "phone_number", "userprofile"]
         
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(source="user.id")
+    email = serializers.EmailField(source="user.email")
+    username = serializers.CharField(source="user.username")
+    class Meta:
+        model = UserProfile
+        fields = ["id", "username", "email", "avatar", "bio", "website"]

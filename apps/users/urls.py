@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import LoginView, LogoutView, MyProfileView
+from .views import LoginView, LogoutView, MyProfileView, UserProfileView
 
 
 from rest_framework_simplejwt.views import (
@@ -15,4 +15,5 @@ urlpatterns = [
     path("login/", LoginView.as_view(), name="login"),
     path("logout/", LogoutView.as_view(), name="logout"),
     path("profile/me/",MyProfileView.as_view(), name = "my_profile"),
+    path("profile/<int:user_id>/", UserProfileView.as_view(), name="user_profile")
 ]
