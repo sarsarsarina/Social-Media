@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.tokens import RefreshToken
-from .selectors import get_user, get_user_by_id
-from rest_framework.exceptions import AuthenticationFailed, ValidationError
+from .selectors import get_user, get_user_by_id, get_user_profile_by_id
+from rest_framework.exceptions import AuthenticationFailed, ValidationError, NotFound
 from .models import UserProfile
 
 User = get_user_model()
@@ -51,5 +51,4 @@ def logout_user(refresh_token):
         
         
 def get_my_profile(user_id):
-    user = get_user_by_id(user_id)
-    return user
+    return User.objects.select_related("userprofile").filter(id=user_id).first()

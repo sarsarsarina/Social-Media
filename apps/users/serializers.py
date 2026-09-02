@@ -35,16 +35,17 @@ class LogoutSerializer(serializers.Serializer):
     refresh_token = serializers.CharField(required = True)
 
     
-class UserProfileSerializer(serializers.ModelSerializer):
+class MyUserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ["bio", "avatar", "website", "gender", "birth_date", "location"]
 
     
 class MyProfileSerializer(serializers.ModelSerializer):
-    userprofile = UserProfileSerializer()
+    userprofile = MyUserProfileSerializer()
 
     class Meta:
         model = get_user_model()
         fields = ["id", "username", "email", "phone_number", "userprofile"]
         
+

@@ -1,4 +1,4 @@
-from .models import User
+from .models import User, UserProfile
 
 def get_user(email_or_username):
     return User.objects.filter(email=email_or_username).first() or \

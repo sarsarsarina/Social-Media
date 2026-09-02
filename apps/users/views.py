@@ -3,8 +3,8 @@ from .serializers import RegisterSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from .services import create_user, logout_user, get_my_profile
-from .serializers import RegisterSerializer, LoginSerializer, LogoutSerializer, MyProfileSerializer
-from .services import login_user
+from .serializers import RegisterSerializer, LoginSerializer, LogoutSerializer, MyProfileSerializer, UserProfileSerializer
+from .services import login_user, get_user_profile
 from rest_framework.permissions import IsAuthenticated
 
 class RegisterView(APIView):
@@ -45,5 +45,5 @@ class MyProfileView(APIView):
     
     def get(self, request):
         user = get_my_profile(request.user.id)
-        serializer = MyProfileSerializer(request.user)
+        serializer = MyProfileSerializer(user)
         return Response(serializer.data)
