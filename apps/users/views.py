@@ -22,7 +22,7 @@ from .services import (
     get_my_profile,
 )
 
-from .selectors import get_user_profile
+from .selectors import get_profile_by_user
 
 
 class RegisterView(APIView):
@@ -56,7 +56,6 @@ class LogoutView(APIView):
 
 class UpdateProfileView(APIView):
     def patch(self, request):
-        profile = get_user_profile(request.user)
 
         serializer = UpdateProfileSerializer(data=request.data)
 
@@ -67,6 +66,9 @@ class UpdateProfileView(APIView):
             request.user,
             serializer.validated_data
         )
+
+        serializer = UserProfileSerializer(instance=updated_profile)
+        return Response(serializer.data)
 
 
 class FollowUserView(APIView):
@@ -99,6 +101,6 @@ class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, user_id):
-        profile = get_user_profile(user_id)
+        profile = get_profile_by_user(user_id)
         serializer = UserProfileSerializer(profile)
         return Response(serializer.data)

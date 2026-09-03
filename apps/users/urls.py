@@ -22,4 +22,5 @@ urlpatterns = [
     path("follow/", FollowUserView.as_view(), name="follow_user"),
     path("profile/me/", MyProfileView.as_view(), name="my_profile"),
     path("profile/<int:user_id>/", UserProfileView.as_view(), name="user_profile"),
+    path('update/profile/', views.UpdateProfileView.as_view(), name='update_profile'),
 ]

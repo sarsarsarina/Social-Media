@@ -6,7 +6,7 @@ def get_user(email_or_username):
         User.objects.filter(username=email_or_username).first()
 
 
-def get_user_profile(user):
+def get_profile_by_user(user):
     profile = UserProfile.objects.get(user=user)
     return profile
 

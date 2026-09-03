@@ -37,7 +37,7 @@ class LogoutSerializer(serializers.Serializer):
 
 
 class UpdateProfileSerializer(serializers.ModelSerializer):
-    name = serializers.CharField()
+    name = serializers.CharField(required=False)
 
     class Meta:
         model = UserProfile
