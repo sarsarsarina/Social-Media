@@ -54,3 +54,27 @@ class FollowUserSerializer(serializers.ModelSerializer):
         fields = [
             'following'
         ]
+
+
+class MyUserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ["bio", "avatar", "website", "gender", "birth_date", "location"]
+
+
+class MyProfileSerializer(serializers.ModelSerializer):
+    userprofile = MyUserProfileSerializer()
+
+    class Meta:
+        model = get_user_model()
+        fields = ["id", "username", "email", "phone_number", "userprofile"]
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(source="user.id")
+    email = serializers.EmailField(source="user.email")
+    username = serializers.CharField(source="user.username")
+
+    class Meta:
+        model = UserProfile
+        fields = ["id", "username", "email", "avatar", "bio", "website"]

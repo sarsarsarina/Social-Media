@@ -12,5 +12,18 @@ def get_user_profile(user):
 
 
 def follow_exists(follower, following):
-    exists = Follow.objects.filter(follower=follower, following=following).exists()
+    exists = Follow.objects.filter(
+        follower=follower,
+        following=following
+    ).exists()
     return exists
+
+
+def get_user_by_id(user_id):
+    return User.objects.filter(id=user_id).first()
+
+
+def get_user_profile_by_id(user_id):
+    return UserProfile.objects.select_related("user").filter(
+        user_id=user_id
+    ).first()
