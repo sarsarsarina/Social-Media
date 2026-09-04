@@ -48,14 +48,6 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
         ]
 
 
-class FollowUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Follow
-        fields = [
-            'following'
-        ]
-
-
 class MyUserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
@@ -78,3 +70,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ["id", "username", "email", "avatar", "bio", "website"]
+
+
+class FollowUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Follow
+        fields = [
+            'following'
+        ]
