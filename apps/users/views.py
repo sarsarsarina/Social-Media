@@ -11,6 +11,7 @@ from .serializers import (
     FollowUserSerializer,
     MyProfileSerializer,
     UserProfileSerializer,
+    FollowersListSerializer
 )
 
 from .services import (
@@ -23,7 +24,8 @@ from .services import (
     unfollow_user
 )
 
-from .selectors import get_profile_by_user
+from .selectors import get_profile_by_user, followers_list
+from . paginations import FollowersListPagination
 
 
 class RegisterView(APIView):
@@ -56,6 +58,8 @@ class LogoutView(APIView):
 
 
 class UpdateProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def patch(self, request):
         serializer = UpdateProfileSerializer(data=request.data)
 
@@ -90,6 +94,8 @@ class UserProfileView(APIView):
 
 
 class FollowUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         serializer = FollowUserSerializer(data=request.data)
 
@@ -107,6 +113,8 @@ class FollowUserView(APIView):
 
 
 class UnfollowUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def delete(self, request):
         serializer = FollowUserSerializer(data=request.data)
 
@@ -119,3 +127,15 @@ class UnfollowUserView(APIView):
         unfollow_user(request.user, following)
 
         return Response({"message": "User unfollowed successfully."}, status.HTTP_200_OK)
+
+
+class FollowersListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        followers = followers_list(request.user)
+        paginator = FollowersListPagination()
+        page = paginator.paginate_queryset(followers, request)
+        serializer = FollowersListSerializer(page, many=True)
+
+        return paginator.get_paginated_response(serializer.data)
