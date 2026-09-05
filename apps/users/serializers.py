@@ -92,3 +92,17 @@ class FollowersListSerializer(serializers.ModelSerializer):
         ]
 
 
+class FollowingListSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='following.username')
+    bio = serializers.CharField(source='following.userprofile.bio')
+    avatar = serializers.CharField(source='following.userprofile.avatar')
+
+    class Meta:
+        model = Follow
+        fields = [
+            'username',
+            'bio',
+            'avatar'
+        ]
+
+
