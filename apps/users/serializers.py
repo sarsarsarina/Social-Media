@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import UserProfile
+from .models import UserProfile, Follow
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -29,30 +30,51 @@ class LoginSerializer(serializers.Serializer):
                 "Email or username is required."
             )
         return data
-    
-    
-class LogoutSerializer(serializers.Serializer):
-    refresh_token = serializers.CharField(required = True)
 
-    
+
+class LogoutSerializer(serializers.Serializer):
+    refresh_token = serializers.CharField(required=True)
+
+
+class UpdateProfileSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(required=False)
+
+    class Meta:
+        model = UserProfile
+        fields = [
+            'name',
+            'bio',
+            'avatar'
+        ]
+
+
+class FollowUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Follow
+        fields = [
+            'following'
+        ]
+
+
 class MyUserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ["bio", "avatar", "website", "gender", "birth_date", "location"]
 
-    
+
 class MyProfileSerializer(serializers.ModelSerializer):
     userprofile = MyUserProfileSerializer()
 
     class Meta:
         model = get_user_model()
         fields = ["id", "username", "email", "phone_number", "userprofile"]
-        
+
 
 class UserProfileSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source="user.id")
     email = serializers.EmailField(source="user.email")
     username = serializers.CharField(source="user.username")
+
     class Meta:
         model = UserProfile
         fields = ["id", "username", "email", "avatar", "bio", "website"]

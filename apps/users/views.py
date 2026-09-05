@@ -1,11 +1,29 @@
 from rest_framework.views import APIView
-from .serializers import RegisterSerializer
 from rest_framework.response import Response
 from rest_framework import status
-from .services import create_user, logout_user, get_my_profile
-from .serializers import RegisterSerializer, LoginSerializer, LogoutSerializer, MyProfileSerializer, UserProfileSerializer
-from .services import login_user, get_user_profile
 from rest_framework.permissions import IsAuthenticated
+
+from .serializers import (
+    RegisterSerializer,
+    LoginSerializer,
+    LogoutSerializer,
+    UpdateProfileSerializer,
+    FollowUserSerializer,
+    MyProfileSerializer,
+    UserProfileSerializer,
+)
+
+from .services import (
+    create_user,
+    logout_user,
+    login_user,
+    update_profile,
+    follow_user,
+    get_my_profile,
+)
+
+from .selectors import get_profile_by_user
+
 
 class RegisterView(APIView):
     def post(self, request):
@@ -25,36 +43,64 @@ class LoginView(APIView):
         data = login_user(**serializer.validated_data)
         return Response(data, status=status.HTTP_200_OK)
 
-        
 
-        
 class LogoutView(APIView):
-
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         serializer = LogoutSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = logout_user(**serializer.validated_data)
-        return Response(data, status = status.HTTP_200_OK)
-        
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class UpdateProfileView(APIView):
+    def patch(self, request):
+
+        serializer = UpdateProfileSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        updated_profile = update_profile(
+            request.user,
+            serializer.validated_data
+        )
+
+        serializer = UserProfileSerializer(instance=updated_profile)
+        return Response(serializer.data)
+
+
+class FollowUserView(APIView):
+    def post(self, request):
+        serializer = FollowUserSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = serializer.validated_data
+        following = validated_data['following']
+        follower = request.user
+
+        follow = follow_user(follower, following)
+
+        serializer = FollowUserSerializer(instance=follow)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class MyProfileView(APIView):
-    
     permission_classes = [IsAuthenticated]
-    
+
     def get(self, request):
         user = get_my_profile(request.user.id)
         serializer = MyProfileSerializer(user)
         return Response(serializer.data)
-    
-    
+
+
 class UserProfileView(APIView):
-    
     permission_classes = [IsAuthenticated]
-    
+
     def get(self, request, user_id):
-        profile = get_user_profile(user_id)
+        profile = get_profile_by_user(user_id)
         serializer = UserProfileSerializer(profile)
         return Response(serializer.data)
-        
