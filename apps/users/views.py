@@ -11,7 +11,8 @@ from .serializers import (
     FollowUserSerializer,
     MyProfileSerializer,
     UserProfileSerializer,
-    FollowersListSerializer
+    FollowersListSerializer,
+    FollowingListSerializer
 )
 
 from .services import (
@@ -24,7 +25,7 @@ from .services import (
     unfollow_user
 )
 
-from .selectors import get_profile_by_user, followers_list
+from .selectors import get_profile_by_user, followers_list, following_list
 from . paginations import FollowersListPagination
 
 
@@ -137,5 +138,17 @@ class FollowersListView(APIView):
         paginator = FollowersListPagination()
         page = paginator.paginate_queryset(followers, request)
         serializer = FollowersListSerializer(page, many=True)
+
+        return paginator.get_paginated_response(serializer.data)
+
+
+class FollowingListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        following = following_list(request.user)
+        paginator = FollowersListPagination()
+        page = paginator.paginate_queryset(following, request)
+        serializer = FollowingListSerializer(page, many=True)
 
         return paginator.get_paginated_response(serializer.data)

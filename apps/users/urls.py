@@ -23,5 +23,6 @@ urlpatterns = [
     path('update/profile/', views.UpdateProfileView.as_view(), name='update_profile'),
     path('follow/', views.FollowUserView.as_view(), name='follow_user'),
     path('unfollow/', views.UnfollowUserView.as_view(), name='unfollow_user'),
-    path('followers/list/', views.FollowersListView.as_view(), name='followers_list')
+    path('followers/list/', views.FollowersListView.as_view(), name='followers_list'),
+    path('following/list/', views.FollowingListView.as_view(), name='following_list'),
 ]

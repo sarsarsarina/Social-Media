@@ -34,4 +34,11 @@ def followers_list(user):
    return followers
 
 
+def following_list(user):
+    following = Follow.objects.filter(follower=user).order_by('-created_at')
+    return following
+
+
+
+
 
