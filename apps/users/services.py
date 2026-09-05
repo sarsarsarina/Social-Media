@@ -6,9 +6,10 @@ from .selectors import (
     get_profile_by_user,
     get_user_profile_by_id,
     follow_exists,
+    follow_request_exists
 )
 from rest_framework.exceptions import AuthenticationFailed, ValidationError, NotFound
-from .models import UserProfile, Follow
+from .models import UserProfile, Follow, FollowRequest
 
 User = get_user_model()
 
@@ -117,5 +118,25 @@ def unfollow_user(follower, following):
         following=following
     )
     follow.delete()
+
+
+def follow_request(from_user, to_user):
+
+    if not to_user.is_private:
+        return follow_user(from_user, to_user)
+
+    if follow_request_exists(from_user, to_user):
+        raise ValidationError("You have already sent a follow request to this user.")
+
+
+    return create_follow_request(from_user, to_user)
+
+def create_follow_request(from_user, to_user):
+    request = FollowRequest.objects.create(
+        from_user=from_user,
+        to_user=to_user
+    )
+    return request
+
 
 

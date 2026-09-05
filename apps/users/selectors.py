@@ -1,4 +1,4 @@
-from .models import User, UserProfile, Follow
+from .models import User, UserProfile, Follow, FollowRequest
 
 
 def get_user(email_or_username):
@@ -30,8 +30,8 @@ def get_user_profile_by_id(user_id):
 
 
 def followers_list(user):
-   followers = Follow.objects.filter(following=user).order_by('-created_at')
-   return followers
+    followers = Follow.objects.filter(following=user).order_by('-created_at')
+    return followers
 
 
 def following_list(user):
@@ -39,6 +39,9 @@ def following_list(user):
     return following
 
 
-
-
-
+def follow_request_exists(from_user, to_user):
+    request_exists = FollowRequest.objects.filter(
+        from_user=from_user,
+        to_user=to_user
+    ).exists()
+    return request_exists
