@@ -73,9 +73,25 @@ def update_profile(user, validated_data):
     return profile
 
 
+def get_my_profile(user_id):
+    return User.objects.select_related("userprofile").filter(id=user_id).first()
+
+
+def get_user_profile(user_id):
+    user = get_user_by_id(user_id)
+    if not user:
+        raise NotFound("User not found")
+
+    profile = get_user_profile_by_id(user_id)
+    if not profile:
+        raise NotFound("Profile not found")
+
+    return profile
+
+
 def follow_user(follower, following):
     if follower == following:
-        raise ValidationError('You cant follow yourself')
+        raise ValidationError("You can't follow yourself")
 
     if follow_exists(follower, following):
         raise ValidationError('You already follow this user.')
@@ -91,17 +107,15 @@ def create_follow(follower, following):
     return follow
 
 
-def get_my_profile(user_id):
-    return User.objects.select_related("userprofile").filter(id=user_id).first()
+def unfollow_user(follower, following):
+
+    if not follow_exists(follower, following):
+        raise ValidationError("You don't follow this user.")
+
+    follow = Follow.objects.get(
+        follower=follower,
+        following=following
+    )
+    follow.delete()
 
 
-def get_user_profile(user_id):
-    user = get_user_by_id(user_id)
-    if not user:
-        raise NotFound("User not found")
-
-    profile = get_user_profile_by_id(user_id)
-    if not profile:
-        raise NotFound("Profile not found")
-
-    return profile

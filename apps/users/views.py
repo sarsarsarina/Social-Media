@@ -20,6 +20,7 @@ from .services import (
     update_profile,
     follow_user,
     get_my_profile,
+    unfollow_user
 )
 
 from .selectors import get_profile_by_user
@@ -56,7 +57,6 @@ class LogoutView(APIView):
 
 class UpdateProfileView(APIView):
     def patch(self, request):
-
         serializer = UpdateProfileSerializer(data=request.data)
 
         if not serializer.is_valid():
@@ -69,23 +69,6 @@ class UpdateProfileView(APIView):
 
         serializer = UserProfileSerializer(instance=updated_profile)
         return Response(serializer.data)
-
-
-class FollowUserView(APIView):
-    def post(self, request):
-        serializer = FollowUserSerializer(data=request.data)
-
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        validated_data = serializer.validated_data
-        following = validated_data['following']
-        follower = request.user
-
-        follow = follow_user(follower, following)
-
-        serializer = FollowUserSerializer(instance=follow)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class MyProfileView(APIView):
@@ -104,3 +87,35 @@ class UserProfileView(APIView):
         profile = get_profile_by_user(user_id)
         serializer = UserProfileSerializer(profile)
         return Response(serializer.data)
+
+
+class FollowUserView(APIView):
+    def post(self, request):
+        serializer = FollowUserSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = serializer.validated_data
+        following = validated_data['following']
+        follower = request.user
+
+        follow = follow_user(follower, following)
+
+        FollowUserSerializer(instance=follow)
+        return Response({"message": "User followed successfully."}, status=status.HTTP_200_OK)
+
+
+class UnfollowUserView(APIView):
+    def delete(self, request):
+        serializer = FollowUserSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = serializer.validated_data
+        following = validated_data['following']
+
+        unfollow_user(request.user, following)
+
+        return Response({"message": "User unfollowed successfully."}, status.HTTP_200_OK)
