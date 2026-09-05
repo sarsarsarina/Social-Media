@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import UserProfile, Follow
+from .models import UserProfile, Follow, FollowRequest
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -104,5 +104,11 @@ class FollowingListSerializer(serializers.ModelSerializer):
             'bio',
             'avatar'
         ]
+
+
+class FollowRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FollowRequest
+        fields = ['to_user']
 
 

@@ -12,7 +12,8 @@ from .serializers import (
     MyProfileSerializer,
     UserProfileSerializer,
     FollowersListSerializer,
-    FollowingListSerializer
+    FollowingListSerializer,
+    FollowRequestSerializer
 )
 
 from .services import (
@@ -22,7 +23,8 @@ from .services import (
     update_profile,
     follow_user,
     get_my_profile,
-    unfollow_user
+    unfollow_user,
+    follow_request,
 )
 
 from .selectors import get_profile_by_user, followers_list, following_list
@@ -107,9 +109,8 @@ class FollowUserView(APIView):
         following = validated_data['following']
         follower = request.user
 
-        follow = follow_user(follower, following)
+        follow_user(follower, following)
 
-        FollowUserSerializer(instance=follow)
         return Response({"message": "User followed successfully."}, status=status.HTTP_200_OK)
 
 
@@ -152,3 +153,20 @@ class FollowingListView(APIView):
         serializer = FollowingListSerializer(page, many=True)
 
         return paginator.get_paginated_response(serializer.data)
+
+
+class FollowRequestView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = FollowRequestSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        validated_data = serializer.validated_data
+        to_user = validated_data['to_user']
+        from_user = request.user
+        follow_request(from_user, to_user)
+
+        return Response({"message": "Follow request sent successfully."}, status=status.HTTP_200_OK)
