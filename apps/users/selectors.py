@@ -27,3 +27,11 @@ def get_user_profile_by_id(user_id):
     return UserProfile.objects.select_related("user").filter(
         user_id=user_id
     ).first()
+
+
+def followers_list(user):
+   followers = Follow.objects.filter(following=user).order_by('-created_at')
+   return followers
+
+
+

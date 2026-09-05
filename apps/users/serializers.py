@@ -75,6 +75,20 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class FollowUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follow
+        fields = ['following']
+
+
+class FollowersListSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='follower.username')
+    bio = serializers.CharField(source='follower.userprofile.bio')
+    avatar = serializers.CharField(source='follower.userprofile.avatar')
+
+    class Meta:
+        model = Follow
         fields = [
-            'following'
+            'username',
+            'bio',
+            'avatar'
         ]
+
+
