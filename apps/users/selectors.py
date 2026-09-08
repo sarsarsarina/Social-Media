@@ -52,3 +52,10 @@ def followers_count(user_id):
         following = user_id
     ).count()
     return count
+
+
+def following_count(user_id):
+    count = Follow.objects.filter(
+        follower = user_id
+    ).count()
+    return count

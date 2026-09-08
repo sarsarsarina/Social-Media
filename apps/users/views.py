@@ -26,6 +26,7 @@ from .services import (
     unfollow_user,
     follow_request,
     get_followers_count,
+    get_following_count
 )
 
 from .selectors import get_profile_by_user, followers_list, following_list
@@ -180,3 +181,12 @@ class UserFollowersCountView(APIView):
         count = get_followers_count(user_id)
 
         return Response({'followers_count': count})
+
+
+class UserFollowingCountView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id):
+        count = get_following_count(user_id)
+
+        return Response({'following_count': count})
