@@ -139,4 +139,9 @@ def create_follow_request(from_user, to_user):
     return request
 
 
+def get_followers_count(user_id):
+    return Follow.objects.filter(
+        following = user_id
+    ).count()
+
 
