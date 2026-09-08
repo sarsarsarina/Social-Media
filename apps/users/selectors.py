@@ -1,4 +1,4 @@
-from .models import User, UserProfile, Follow, FollowRequest
+from .models import User, UserProfile, Follow, FollowRequest,BlockUser
 
 
 def get_user(email_or_username):
@@ -45,3 +45,6 @@ def follow_request_exists(from_user, to_user):
         to_user=to_user
     ).exists()
     return request_exists
+
+
+    

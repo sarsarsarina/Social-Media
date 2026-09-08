@@ -6,10 +6,11 @@ from .selectors import (
     get_profile_by_user,
     get_user_profile_by_id,
     follow_exists,
-    follow_request_exists
+    follow_request_exists,
+    block_user
 )
 from rest_framework.exceptions import AuthenticationFailed, ValidationError, NotFound
-from .models import UserProfile, Follow, FollowRequest
+from .models import UserProfile, Follow, FollowRequest, BlockUser
 
 User = get_user_model()
 
@@ -137,6 +138,4 @@ def create_follow_request(from_user, to_user):
         to_user=to_user
     )
     return request
-
-
 
