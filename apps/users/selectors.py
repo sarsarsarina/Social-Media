@@ -45,3 +45,10 @@ def follow_request_exists(from_user, to_user):
         to_user=to_user
     ).exists()
     return request_exists
+
+
+def followers_count(user_id):
+    count = Follow.objects.filter(
+        following = user_id
+    ).count()
+    return count
