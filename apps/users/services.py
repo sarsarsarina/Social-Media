@@ -145,3 +145,9 @@ def get_followers_count(user_id):
     ).count()
 
 
+def get_following_count(user_id):
+    return Follow.objects.filter(
+        follower = user_id
+    ).count()
+
+
