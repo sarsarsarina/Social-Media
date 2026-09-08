@@ -7,7 +7,7 @@ from .selectors import (
     get_user_profile_by_id,
     follow_exists,
     follow_request_exists,
-    block_user
+    block_exists
 )
 from rest_framework.exceptions import AuthenticationFailed, ValidationError, NotFound
 from .models import UserProfile, Follow, FollowRequest, BlockUser
@@ -139,3 +139,22 @@ def create_follow_request(from_user, to_user):
     )
     return request
 
+
+
+def block_user(blocker, blocked):
+    
+    if blocker == blocked:
+        raise ValidationError("You can't block yourself")
+    
+    if block_exists(blocked,blocker):
+        raise ValidationError("You already blocked this user.")
+    
+    return create_block(blocker, blocked)
+
+
+def create_block(blocker, blocked):
+    block = BlockUser.objects.create(
+        blocker = blocker,
+        blocked = blocked
+    )
+    return block

@@ -47,10 +47,10 @@ def follow_request_exists(from_user, to_user):
     return request_exists
 
 
-def block_request_exists(blocker,blocked):
-    block_exist = BlockUser.objects.filter(
+def block_exists(blocker,blocked):
+    block_exists = BlockUser.objects.filter(
         blocker = blocker,
         blocked = blocked
     ).exists()
-    return block_exist
+    return block_exists
     
