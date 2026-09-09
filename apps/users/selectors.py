@@ -1,4 +1,5 @@
 from .models import User, UserProfile, Follow, FollowRequest,BlockUser
+from django.db.models import Q
 
 
 def get_user(email_or_username):
@@ -53,4 +54,10 @@ def block_exists(blocker,blocked):
         blocked = blocked
     ).exists()
     return block_exists
-    
+
+
+def is_blocked(user1, user2):
+    is_blocked = BlockUser.objects.filter(
+        Q(blocker = user1, blocked = user2) | Q(blocker = user2, blocked = user1)
+    ).exists()
+    return is_blocked
