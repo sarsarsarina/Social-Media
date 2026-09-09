@@ -13,7 +13,8 @@ from .serializers import (
     UserProfileSerializer,
     FollowersListSerializer,
     FollowingListSerializer,
-    FollowRequestSerializer
+    FollowRequestSerializer, 
+    BlockUserSerializer,
 )
 
 from .services import (
@@ -25,6 +26,7 @@ from .services import (
     get_my_profile,
     unfollow_user,
     follow_request,
+    block_user,
 )
 
 from .selectors import get_profile_by_user, followers_list, following_list
@@ -170,3 +172,21 @@ class FollowRequestView(APIView):
         follow_request(from_user, to_user)
 
         return Response({"message": "Follow request sent successfully."}, status=status.HTTP_200_OK)
+    
+    
+class BlockUserView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        serializer = BlockUserSerializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        validated_data = serializer.validated_data
+        blocked = validated_data['blocked']
+        blocker = request.user
+    
+        block_user(blocker, blocked)
+    
+        return Response({"message":"User blocked successfully."}, status=status.HTTP_200_OK)

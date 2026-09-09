@@ -5,6 +5,7 @@ from .views import (
     LogoutView,
     MyProfileView,
     UserProfileView,
+    BlockUserView,
 )
 
 from rest_framework_simplejwt.views import (
@@ -26,4 +27,5 @@ urlpatterns = [
     path('followers/list/', views.FollowersListView.as_view(), name='followers_list'),
     path('following/list/', views.FollowingListView.as_view(), name='following_list'),
     path('follow/request/', views.FollowRequestView.as_view(), name='follow_request'),
+    path('block/', views.BlockUserView.as_view(), name= 'block_user'),
 ]
