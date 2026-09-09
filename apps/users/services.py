@@ -11,6 +11,7 @@ from .selectors import (
 )
 from rest_framework.exceptions import AuthenticationFailed, ValidationError, NotFound
 from .models import UserProfile, Follow, FollowRequest, BlockUser
+from django.db.models import Q
 
 User = get_user_model()
 
@@ -149,6 +150,8 @@ def block_user(blocker, blocked):
     if block_exists(blocked,blocker):
         raise ValidationError("You already blocked this user.")
     
+    remove_follows(blocked, blocker)
+    
     return create_block(blocker, blocked)
 
 
@@ -158,3 +161,8 @@ def create_block(blocker, blocked):
         blocked = blocked
     )
     return block
+
+def remove_follows(user1, user2):
+    Follow.objects.filter(
+        Q(follower=user1, following=user2) | Q(follower=user2, following= user1)
+    ).delete()
