@@ -7,7 +7,8 @@ from .selectors import (
     get_user_profile_by_id,
     follow_exists,
     follow_request_exists,
-    block_exists
+    block_exists,
+    is_blocked,
 )
 from rest_framework.exceptions import AuthenticationFailed, ValidationError, NotFound
 from .models import UserProfile, Follow, FollowRequest, BlockUser
@@ -79,11 +80,16 @@ def update_profile(user, validated_data):
 def get_my_profile(user_id):
     return User.objects.select_related("userprofile").filter(id=user_id).first()
 
+def check_not_blocked(viewer, user):
+    if is_blocked(viewer, user):
+        raise NotFound("User not found")
 
-def get_user_profile(user_id):
+def get_user_profile(user_id, viewer):
     user = get_user_by_id(user_id)
     if not user:
         raise NotFound("User not found")
+    
+    check_not_blocked(viewer, user)
 
     profile = get_user_profile_by_id(user_id)
     if not profile:
@@ -165,4 +171,4 @@ def create_block(blocker, blocked):
 def remove_follows(user1, user2):
     Follow.objects.filter(
         Q(follower=user1, following=user2) | Q(follower=user2, following= user1)
-    ).delete()
+    ).delete() 
