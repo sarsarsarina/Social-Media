@@ -27,6 +27,7 @@ from .services import (
     unfollow_user,
     follow_request,
     block_user,
+    get_user_profile,
 )
 
 from .selectors import get_profile_by_user, followers_list, following_list
@@ -93,7 +94,7 @@ class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, user_id):
-        profile = get_profile_by_user(user_id)
+        profile = get_user_profile(user_id, request.user)
         serializer = UserProfileSerializer(profile)
         return Response(serializer.data)
 
