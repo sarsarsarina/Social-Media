@@ -9,6 +9,8 @@ from .selectors import (
     follow_request_exists,
     block_exists,
     is_blocked,
+    followers_count,
+    following_count,
 )
 from rest_framework.exceptions import AuthenticationFailed, ValidationError, NotFound
 from .models import UserProfile, Follow, FollowRequest, BlockUser
@@ -146,6 +148,15 @@ def create_follow_request(from_user, to_user):
     )
     return request
 
+
+def get_followers_count(user_id):
+    count = followers_count(user_id)
+    return count
+
+
+def get_following_count(user_id):
+    count = following_count(user_id)
+    return count
 
 
 def block_user(blocker, blocked):

@@ -61,3 +61,17 @@ def is_blocked(user1, user2):
         Q(blocker = user1, blocked = user2) | Q(blocker = user2, blocked = user1)
     ).exists()
     return is_blocked
+
+
+def followers_count(user_id):
+    count = Follow.objects.filter(
+        following = user_id
+    ).count()
+    return count
+
+
+def following_count(user_id):
+    count = Follow.objects.filter(
+        follower = user_id
+    ).count()
+    return count

@@ -27,11 +27,13 @@ from .services import (
     unfollow_user,
     follow_request,
     block_user,
+    get_followers_count,
+    get_following_count,
     get_user_profile,
 )
 
 from .selectors import get_profile_by_user, followers_list, following_list
-from . paginations import FollowersListPagination
+from .paginations import FollowersListPagination
 
 
 class RegisterView(APIView):
@@ -173,6 +175,25 @@ class FollowRequestView(APIView):
         follow_request(from_user, to_user)
 
         return Response({"message": "Follow request sent successfully."}, status=status.HTTP_200_OK)
+
+
+class UserFollowersCountView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id):
+        count = get_followers_count(user_id)
+
+        return Response({'followers_count': count})
+
+
+class UserFollowingCountView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id):
+        count = get_following_count(user_id)
+
+        return Response({'following_count': count})
+    
     
     
 class BlockUserView(APIView):
