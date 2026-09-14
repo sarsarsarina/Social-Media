@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import UserProfile, Follow, FollowRequest
+from .models import UserProfile, Follow, FollowRequest, BlockUser
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -112,3 +112,7 @@ class FollowRequestSerializer(serializers.ModelSerializer):
         fields = ['to_user']
 
 
+class BlockUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlockUser
+        fields = ['blocked']

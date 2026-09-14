@@ -1,4 +1,5 @@
-from .models import User, UserProfile, Follow, FollowRequest
+from .models import User, UserProfile, Follow, FollowRequest,BlockUser
+from django.db.models import Q
 
 
 def get_user(email_or_username):
@@ -45,6 +46,21 @@ def follow_request_exists(from_user, to_user):
         to_user=to_user
     ).exists()
     return request_exists
+
+
+def block_exists(blocker,blocked):
+    block_exists = BlockUser.objects.filter(
+        blocker = blocker,
+        blocked = blocked
+    ).exists()
+    return block_exists
+
+
+def is_blocked(user1, user2):
+    is_blocked = BlockUser.objects.filter(
+        Q(blocker = user1, blocked = user2) | Q(blocker = user2, blocked = user1)
+    ).exists()
+    return is_blocked
 
 
 def followers_count(user_id):

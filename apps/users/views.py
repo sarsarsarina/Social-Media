@@ -13,7 +13,8 @@ from .serializers import (
     UserProfileSerializer,
     FollowersListSerializer,
     FollowingListSerializer,
-    FollowRequestSerializer
+    FollowRequestSerializer, 
+    BlockUserSerializer,
 )
 
 from .services import (
@@ -25,8 +26,10 @@ from .services import (
     get_my_profile,
     unfollow_user,
     follow_request,
+    block_user,
     get_followers_count,
-    get_following_count
+    get_following_count,
+    get_user_profile,
 )
 
 from .selectors import get_profile_by_user, followers_list, following_list
@@ -93,7 +96,7 @@ class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, user_id):
-        profile = get_profile_by_user(user_id)
+        profile = get_user_profile(user_id, request.user)
         serializer = UserProfileSerializer(profile)
         return Response(serializer.data)
 
@@ -190,3 +193,22 @@ class UserFollowingCountView(APIView):
         count = get_following_count(user_id)
 
         return Response({'following_count': count})
+    
+    
+    
+class BlockUserView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        serializer = BlockUserSerializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        validated_data = serializer.validated_data
+        blocked = validated_data['blocked']
+        blocker = request.user
+    
+        block_user(blocker, blocked)
+    
+        return Response({"message":"User blocked successfully."}, status=status.HTTP_200_OK)
