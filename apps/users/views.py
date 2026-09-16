@@ -34,7 +34,7 @@ from .services import (
 )
 
 from .selectors import get_profile_by_user, followers_list, following_list, block_list
-from .paginations import FollowersListPagination
+from .paginations import FollowersListPagination, BlockListPagination
 
 
 class RegisterView(APIView):
@@ -212,4 +212,17 @@ class BlockUserView(APIView):
     
         block_user(blocker, blocked)
     
-        return Response({"message":"User blocked successfully."}, status=status.HTTP_200_OK)   
+        return Response({"message":"User blocked successfully."}, status=status.HTTP_200_OK)
+
+
+class BlockListView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        blocks = block_list(request.user)
+        paginator = BlockListPagination()
+        page = paginator.paginate_queryset(blocks, request)
+        serializer = BlockListSerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+                
+        
