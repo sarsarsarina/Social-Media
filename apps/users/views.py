@@ -32,6 +32,7 @@ from .services import (
     get_user_profile,
     get_user_by_id,
     restrict_user,
+    unrestrict_user,
 )
 
 from .selectors import get_profile_by_user, followers_list, following_list
@@ -221,9 +222,25 @@ class RestrictUserView(APIView):
 
     def post(self, request, user_id):
         restricted_user = get_user_by_id(user_id)
+
         if restricted_user is None:
             return Response({"message": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
         restrict_user(request.user, restricted_user)
 
         return Response({"message": "This user is restricted."}, status=status.HTTP_200_OK)
+
+
+class UnrestrictUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, user_id):
+        restricted_user = get_user_by_id(user_id)
+
+        if restricted_user is None:
+            return Response({"message": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        unrestrict_user(request.user, restricted_user)
+
+        return Response({"message": "User unrestricted successfully."}, status=status.HTTP_200_OK)
+
