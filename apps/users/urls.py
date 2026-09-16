@@ -6,6 +6,7 @@ from .views import (
     MyProfileView,
     UserProfileView,
     BlockUserView,
+    BlockListView
 )
 
 from rest_framework_simplejwt.views import (
@@ -30,4 +31,5 @@ urlpatterns = [
     path('followers/count/<int:user_id>/', views.UserFollowersCountView.as_view(), name='followers_count'),
     path('following/count/<int:user_id>/', views.UserFollowingCountView.as_view(), name='following_count'),
     path('block/', views.BlockUserView.as_view(), name= 'block_user'),
+    path('block/list/',views.BlockListView.as_view(), name= 'block_list')
 ]
