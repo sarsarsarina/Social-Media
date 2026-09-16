@@ -15,6 +15,7 @@ from .serializers import (
     FollowingListSerializer,
     FollowRequestSerializer, 
     BlockUserSerializer,
+    BlockListSerializer
 )
 
 from .services import (
@@ -32,7 +33,7 @@ from .services import (
     get_user_profile,
 )
 
-from .selectors import get_profile_by_user, followers_list, following_list
+from .selectors import get_profile_by_user, followers_list, following_list, block_list
 from .paginations import FollowersListPagination
 
 
@@ -211,4 +212,4 @@ class BlockUserView(APIView):
     
         block_user(blocker, blocked)
     
-        return Response({"message":"User blocked successfully."}, status=status.HTTP_200_OK)
+        return Response({"message":"User blocked successfully."}, status=status.HTTP_200_OK)   
