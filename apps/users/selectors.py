@@ -75,3 +75,10 @@ def following_count(user_id):
         follower = user_id
     ).count()
     return count
+
+
+def block_list(user):
+    block = BlockUser.objects.filter(
+        blocker = user
+    ).order_by('-created_at')
+    return block
