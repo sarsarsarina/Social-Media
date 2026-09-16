@@ -11,9 +11,10 @@ from .selectors import (
     is_blocked,
     followers_count,
     following_count,
+    restrict_exists,
 )
 from rest_framework.exceptions import AuthenticationFailed, ValidationError, NotFound
-from .models import UserProfile, Follow, FollowRequest, BlockUser
+from .models import UserProfile, Follow, FollowRequest, BlockUser, RestrictUser
 from django.db.models import Q
 
 User = get_user_model()
@@ -182,4 +183,24 @@ def create_block(blocker, blocked):
 def remove_follows(user1, user2):
     Follow.objects.filter(
         Q(follower=user1, following=user2) | Q(follower=user2, following= user1)
-    ).delete() 
+    ).delete()
+
+
+def restrict_user(user, restricted_user):
+    if user == restricted_user:
+        raise ValidationError("You can't restrict yourself.")
+
+    if restrict_exists(user, restricted_user):
+        raise ValidationError("You already restricted this user.")
+
+    return create_restrict(user, restricted_user)
+
+
+def create_restrict(user, restricted_user):
+    restrict = RestrictUser.objects.create(
+        user = user,
+        restricted_user = restricted_user
+    )
+    return restrict
+
+
