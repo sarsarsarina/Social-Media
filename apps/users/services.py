@@ -204,3 +204,12 @@ def create_restrict(user, restricted_user):
     return restrict
 
 
+def unrestrict_user(user, restricted_user):
+    if not restrict_exists(user, restricted_user):
+        raise ValidationError("User is not restricted")
+
+    restrict = RestrictUser.objects.get(
+        user = user,
+        restricted_user = restricted_user
+    )
+    restrict.delete()
