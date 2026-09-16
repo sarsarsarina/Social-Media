@@ -31,4 +31,5 @@ urlpatterns = [
     path('following/count/<int:user_id>/', views.UserFollowingCountView.as_view(), name='following_count'),
     path('block/', views.BlockUserView.as_view(), name= 'block_user'),
     path('restrict/<int:user_id>/', views.RestrictUserView.as_view(), name='restrict_user'),
+    path('unrestrict/<int:user_id>/', views.UnrestrictUserView.as_view(), name='unrestrict_user'),
 ]
