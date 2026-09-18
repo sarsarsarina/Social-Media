@@ -16,6 +16,7 @@ from .serializers import (
     FollowingListSerializer,
     FollowRequestSerializer, 
     BlockUserSerializer,
+    RestrictListSerializer,
 )
 
 from .services import (
@@ -36,8 +37,8 @@ from .services import (
     unrestrict_user,
 )
 
-from .selectors import get_profile_by_user, followers_list, following_list
-from .paginations import FollowersListPagination
+from .selectors import get_profile_by_user, followers_list, following_list, restrict_list
+from .paginations import StandardListPagination
 
 @extend_schema(request=RegisterSerializer)
 class RegisterView(APIView):
@@ -148,7 +149,7 @@ class FollowersListView(APIView):
 
     def get(self, request):
         followers = followers_list(request.user)
-        paginator = FollowersListPagination()
+        paginator = StandardListPagination()
         page = paginator.paginate_queryset(followers, request)
         serializer = FollowersListSerializer(page, many=True)
 
@@ -160,7 +161,7 @@ class FollowingListView(APIView):
 
     def get(self, request):
         following = following_list(request.user)
-        paginator = FollowersListPagination()
+        paginator = StandardListPagination()
         page = paginator.paginate_queryset(following, request)
         serializer = FollowingListSerializer(page, many=True)
 
@@ -249,3 +250,14 @@ class UnrestrictUserView(APIView):
 
         return Response({"message": "User unrestricted successfully."}, status=status.HTTP_200_OK)
 
+
+class RestrictListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        restricted_user = restrict_list(request.user)
+        paginator = StandardListPagination()
+        page = paginator.paginate_queryset(restricted_user, request)
+        serializer = RestrictListSerializer(page, many=True)
+
+        return paginator.get_paginated_response(serializer.data)
