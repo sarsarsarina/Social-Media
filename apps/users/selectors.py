@@ -83,3 +83,8 @@ def restrict_exists(user, restricted_user):
         restricted_user = restricted_user
     ).exists()
     return restrict_exists
+
+
+def restrict_list(user):
+    restricted = RestrictUser.objects.filter(user=user).order_by("-created_at")
+    return restricted
