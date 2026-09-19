@@ -183,3 +183,15 @@ def remove_follows(user1, user2):
     Follow.objects.filter(
         Q(follower=user1, following=user2) | Q(follower=user2, following= user1)
     ).delete() 
+    
+    
+def unblock_user(blocker, blocked):
+    if not block_exists(blocker, blocked):
+        raise ValidationError("You don't block this user.")
+    
+    block = BlockUser.objects.get(
+        blocker = blocker,
+        blocked = blocked
+    )
+    
+    block.delete()

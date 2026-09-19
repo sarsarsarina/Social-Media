@@ -30,6 +30,7 @@ from .services import (
     get_followers_count,
     get_following_count,
     get_user_profile,
+    unblock_user,
 )
 
 from .selectors import get_profile_by_user, followers_list, following_list
@@ -212,3 +213,20 @@ class BlockUserView(APIView):
         block_user(blocker, blocked)
     
         return Response({"message":"User blocked successfully."}, status=status.HTTP_200_OK)
+
+
+class UnblockUserView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def delete(self, request):
+        serializer = BlockUserSerializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+       
+        validated_data = serializer.validated_data
+        blocked = validated_data['blocked']
+
+        unblock_user(request.user, blocked)
+
+        return Response({"message": "User unblocked successfully."}, status=status.HTTP_200_OK)
