@@ -77,6 +77,13 @@ def following_count(user_id):
     return count
 
 
+def block_list(user):
+    block = BlockUser.objects.filter(
+        blocker = user
+    ).order_by('-created_at')
+    return block
+
+
 def restrict_exists(user, restricted_user):
     restrict_exists = RestrictUser.objects.filter(
         user = user,
