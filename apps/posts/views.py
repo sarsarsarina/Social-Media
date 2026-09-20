@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from .selectors import my_posts
-from .serializers import PostSerializer
+from .serializers import MyPostSerializer
 from .paginations import PostListPagination
  
 class MyPostsView(APIView):
@@ -14,5 +14,5 @@ class MyPostsView(APIView):
         posts = my_posts(request.user)
         paginator = PostListPagination()
         page = paginator.paginate_queryset(posts, request)
-        serializer = PostSerializer(page, many=True)
+        serializer = MyPostSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
