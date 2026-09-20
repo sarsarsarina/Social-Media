@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from drf_spectacular.utils import extend_schema, OpenApiRequest
 
 from .serializers import (
     RegisterSerializer,
@@ -40,7 +41,7 @@ from .services import (
 from .selectors import get_profile_by_user, followers_list, following_list, block_list
 from .paginations import FollowersListPagination, BlockListPagination
 
-
+@extend_schema(request=RegisterSerializer)
 class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
@@ -51,7 +52,7 @@ class RegisterView(APIView):
         data = create_user(serializer.validated_data)
         return Response(data, status=status.HTTP_201_CREATED)
 
-
+@extend_schema(request=LoginSerializer)
 class LoginView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -59,7 +60,7 @@ class LoginView(APIView):
         data = login_user(**serializer.validated_data)
         return Response(data, status=status.HTTP_200_OK)
 
-
+@extend_schema(request=LogoutSerializer)
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -69,7 +70,7 @@ class LogoutView(APIView):
         data = logout_user(**serializer.validated_data)
         return Response(data, status=status.HTTP_200_OK)
 
-
+@extend_schema(request=UpdateProfileSerializer)
 class UpdateProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -105,7 +106,7 @@ class UserProfileView(APIView):
         serializer = UserProfileSerializer(profile)
         return Response(serializer.data)
 
-
+@extend_schema(request=FollowUserSerializer)
 class FollowUserView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -127,18 +128,21 @@ class FollowUserView(APIView):
 class UnfollowUserView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def delete(self, request):
-        serializer = FollowUserSerializer(data=request.data)
+    def delete(self, request, user_id):
+        following = get_user_by_id(user_id)
 
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        validated_data = serializer.validated_data
-        following = validated_data['following']
+        if following is None:
+            return Response(
+                {"message": "User not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
         unfollow_user(request.user, following)
 
-        return Response({"message": "User unfollowed successfully."}, status.HTTP_200_OK)
+        return Response(
+            {"message": "User unfollowed successfully."},
+            status=status.HTTP_200_OK
+        )
 
 
 class FollowersListView(APIView):
@@ -165,6 +169,7 @@ class FollowingListView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
 
+@extend_schema(request=FollowRequestSerializer)
 class FollowRequestView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -198,8 +203,9 @@ class UserFollowingCountView(APIView):
         count = get_following_count(user_id)
 
         return Response({'following_count': count}, status=status.HTTP_200_OK)
-
-
+    
+    
+@extend_schema(request=BlockUserSerializer)
 class BlockUserView(APIView):
     permission_classes = [IsAuthenticated]
 
