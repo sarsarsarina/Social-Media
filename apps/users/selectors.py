@@ -1,5 +1,5 @@
-from .models import User, UserProfile, Follow, FollowRequest,BlockUser
-from django.db.models import Q
+from .models import User, UserProfile, Follow, FollowRequest, BlockUser, RestrictUser
+from django.db.models import Q, Model
 
 
 def get_user(email_or_username):
@@ -82,3 +82,11 @@ def block_list(user):
         blocker = user
     ).order_by('-created_at')
     return block
+
+
+def restrict_exists(user, restricted_user):
+    restrict_exists = RestrictUser.objects.filter(
+        user = user,
+        restricted_user = restricted_user
+    ).exists()
+    return restrict_exists

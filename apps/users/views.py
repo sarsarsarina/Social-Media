@@ -13,7 +13,7 @@ from .serializers import (
     UserProfileSerializer,
     FollowersListSerializer,
     FollowingListSerializer,
-    FollowRequestSerializer, 
+    FollowRequestSerializer,
     BlockUserSerializer,
     BlockListSerializer
 )
@@ -31,6 +31,8 @@ from .services import (
     get_followers_count,
     get_following_count,
     get_user_profile,
+    get_user_by_id,
+    restrict_user,
     unblock_user,
 )
 
@@ -185,7 +187,7 @@ class UserFollowersCountView(APIView):
     def get(self, request, user_id):
         count = get_followers_count(user_id)
 
-        return Response({'followers_count': count})
+        return Response({'followers_count': count}, status=status.HTTP_200_OK)
 
 
 class UserFollowingCountView(APIView):
@@ -194,37 +196,49 @@ class UserFollowingCountView(APIView):
     def get(self, request, user_id):
         count = get_following_count(user_id)
 
-        return Response({'following_count': count})
-    
-    
-    
+        return Response({'following_count': count}, status=status.HTTP_200_OK)
+
+
 class BlockUserView(APIView):
     permission_classes = [IsAuthenticated]
-    
+
     def post(self, request):
         serializer = BlockUserSerializer(data=request.data)
-        
+
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
         validated_data = serializer.validated_data
         blocked = validated_data['blocked']
         blocker = request.user
-    
+
         block_user(blocker, blocked)
-    
-        return Response({"message":"User blocked successfully."}, status=status.HTTP_200_OK)
+
+        return Response({"message": "User blocked successfully."}, status=status.HTTP_200_OK)
+
+
+class RestrictUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+        restricted_user = get_user_by_id(user_id)
+        if restricted_user is None:
+            return Response({"message": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        restrict_user(request.user, restricted_user)
+
+        return Response({"message": "This user is restricted."}, status=status.HTTP_200_OK)
 
         
 class UnblockUserView(APIView):
     permission_classes = [IsAuthenticated]
-    
+
     def delete(self, request):
         serializer = BlockUserSerializer(data=request.data)
-        
+
         if not serializer.is_valid():
-            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-       
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
         validated_data = serializer.validated_data
         blocked = validated_data['blocked']
 
