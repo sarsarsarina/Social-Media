@@ -1,5 +1,5 @@
-from .models import User, UserProfile, Follow, FollowRequest,BlockUser
-from django.db.models import Q
+from .models import User, UserProfile, Follow, FollowRequest, BlockUser, RestrictUser
+from django.db.models import Q, Model
 
 
 def get_user(email_or_username):
@@ -75,3 +75,11 @@ def following_count(user_id):
         follower = user_id
     ).count()
     return count
+
+
+def restrict_exists(user, restricted_user):
+    restrict_exists = RestrictUser.objects.filter(
+        user = user,
+        restricted_user = restricted_user
+    ).exists()
+    return restrict_exists
