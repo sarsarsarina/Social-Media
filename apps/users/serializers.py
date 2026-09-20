@@ -116,3 +116,16 @@ class BlockUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = BlockUser
         fields = ['blocked']
+        
+        
+class BlockListSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='blocked.username')
+    bio = serializers.CharField(source='blocked.userprofile.bio')
+    avatar = serializers.CharField(source='blocked.userprofile.avatar')
+    class Meta:
+        model = BlockUser
+        fields = [
+            'username',
+            'bio',
+            'avatar'
+        ]      

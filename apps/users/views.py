@@ -15,6 +15,7 @@ from .serializers import (
     FollowingListSerializer,
     FollowRequestSerializer,
     BlockUserSerializer,
+    BlockListSerializer
 )
 
 from .services import (
@@ -35,8 +36,8 @@ from .services import (
     unblock_user,
 )
 
-from .selectors import get_profile_by_user, followers_list, following_list
-from .paginations import FollowersListPagination
+from .selectors import get_profile_by_user, followers_list, following_list, block_list
+from .paginations import FollowersListPagination, BlockListPagination
 
 
 class RegisterView(APIView):
@@ -228,7 +229,7 @@ class RestrictUserView(APIView):
 
         return Response({"message": "This user is restricted."}, status=status.HTTP_200_OK)
 
-
+        
 class UnblockUserView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -244,3 +245,15 @@ class UnblockUserView(APIView):
         unblock_user(request.user, blocked)
 
         return Response({"message": "User unblocked successfully."}, status=status.HTTP_200_OK)
+
+
+class BlockListView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        blocks = block_list(request.user)
+        paginator = BlockListPagination()
+        page = paginator.paginate_queryset(blocks, request)
+        serializer = BlockListSerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+                
