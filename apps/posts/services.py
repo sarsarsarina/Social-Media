@@ -98,3 +98,12 @@ def update_post(user, post_id, validated_data):
             PostMedia.objects.bulk_create(media_objects)
 
     return post
+
+
+def delete_post(user, post_id):
+    post = get_post_by_id(post_id)
+
+    if not post or post.owner != user:
+        raise NotFound("Post not found")
+
+    post.delete()
