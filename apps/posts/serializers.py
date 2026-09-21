@@ -13,3 +13,23 @@ class MyPostSerializer(serializers.ModelSerializer):
             'comments_count',
             'created_at',
         ]
+        
+
+class CreatePostSerializer(serializers.Serializer):
+    caption = serializers.CharField(
+        required=False, allow_blank=True
+    )
+    visibility = serializers.ChoiceField(
+        choices=Post.Visibility.choices, default=Post.Visibility.PUBLIC
+    )
+    comments_enabled = serializers.BooleanField(
+        default=True
+    )
+    images = serializers.ListField(
+        child=serializers.ImageField(),
+        required=False
+    )
+    videos = serializers.ListField(
+        child=serializers.FileField(),
+        required=False
+    )
