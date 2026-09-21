@@ -48,7 +48,7 @@ class UpdatePostView(APIView):
             if not serializer.is_valid():
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
-            post = update_post(post_id, serializer.validated_data)
+            post = update_post(request.user, post_id, serializer.validated_data)
             
             serializer = MyPostSerializer(instance=post)
             
