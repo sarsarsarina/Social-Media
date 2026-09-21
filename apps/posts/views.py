@@ -26,15 +26,15 @@ class CreatePostView(APIView):
     parser_classes = [MultiPartParser, FormParser]
     
     
-def post(self,request):
-    serializer = CreatePostSerializer(data=request.data)
+    def post(self,request):
+        serializer = CreatePostSerializer(data=request.data)
     
-    if not serializer.is_valid():
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    post = create_post(request.user, serializer.validated_data)
+        post = create_post(request.user, serializer.validated_data)
 
-    response_serializer = MyPostSerializer(post)
-    return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+        response_serializer = MyPostSerializer(post)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
     
     
