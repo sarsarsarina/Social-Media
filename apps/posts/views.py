@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
 
 from .selectors import my_posts
-from .services import create_post, update_post
+from .services import create_post, update_post, delete_post
 from .serializers import MyPostSerializer, CreatePostSerializer, UpdatePostSerializer
 from .paginations import PostListPagination
  
@@ -54,6 +54,14 @@ class UpdatePostView(APIView):
             
             return Response(serializer.data)
 
+
+class DeletePostView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def delete(self, request, post_id):
+        delete_post(request.user, post_id)
+        
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
     
     
