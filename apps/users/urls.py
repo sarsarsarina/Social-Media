@@ -24,7 +24,7 @@ urlpatterns = [
     path("profile/<int:user_id>/", UserProfileView.as_view(), name="user_profile"),
     path('update/profile/', views.UpdateProfileView.as_view(), name='update_profile'),
     path('follow/', views.FollowUserView.as_view(), name='follow_user'),
-    path('unfollow/', views.UnfollowUserView.as_view(), name='unfollow_user'),
+    path('unfollow/<int:user_id>/', views.UnfollowUserView.as_view(), name='unfollow_user'),
     path('followers/list/', views.FollowersListView.as_view(), name='followers_list'),
     path('following/list/', views.FollowingListView.as_view(), name='following_list'),
     path('follow/request/', views.FollowRequestView.as_view(), name='follow_request'),
@@ -35,4 +35,5 @@ urlpatterns = [
     path('block/list/',views.BlockListView.as_view(), name= 'block_list'),
     path('unblock/',views.UnblockUserView.as_view(), name='unblock_user'),
     path('restrict/<int:user_id>/', views.RestrictUserView.as_view(), name='restrict_user'),
+    path('unrestrict/<int:user_id>/', views.UnrestrictUserView.as_view(), name='unrestrict_user'),
 ]
