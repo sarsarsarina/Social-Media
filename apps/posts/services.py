@@ -107,3 +107,12 @@ def delete_post(user, post_id):
         raise NotFound("Post not found")
 
     post.delete()
+    
+
+def get_post_detail(user, post_id):
+    post = get_post_by_id(post_id)
+    
+    if not post or post.owner != user:
+        raise NotFound("Post not found")
+    
+    return post
