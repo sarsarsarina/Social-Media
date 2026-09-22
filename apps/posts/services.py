@@ -1,6 +1,6 @@
 from django.db import transaction
 from .models import Post, PostMedia
-from .selectors import get_post_by_id
+from .selectors import get_post_by_id, post_list
 from rest_framework.exceptions import NotFound
 
 
@@ -116,3 +116,13 @@ def get_post_detail(user, post_id):
         raise NotFound("Post not found")
     
     return post
+
+
+def get_post_list(user_id=None, ordering='-created_at'):
+    posts = post_list(
+        user_id = user_id,
+        ordering = ordering
+    )
+    
+    return posts
+
