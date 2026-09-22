@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Post
+from .models import Post, PostMedia
 
 class MyPostSerializer(serializers.ModelSerializer):
     class Meta:
@@ -57,3 +57,31 @@ class UpdatePostSerializer(serializers.Serializer):
         child=serializers.IntegerField(),
         required=False
     )
+    
+    
+class PostMediaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostMedia
+        fields = [
+            'id',
+            'file',
+            'media_type',
+            'order',
+        ]
+        
+
+class PostDetailSerializer(serializers.ModelSerializer):
+    media = PostMediaSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = Post
+        fields = [
+             'id',
+            'caption',
+            'visibility',
+            'comments_enabled',
+            'likes_count',
+            'comments_count',
+            'created_at', 
+            'media'    
+        ]
