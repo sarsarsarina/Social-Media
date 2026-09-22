@@ -71,4 +71,5 @@ class PostDetailView(APIView):
     def get(self, request, post_id):
         post = get_post_detail(request.user, post_id)
         serializer = PostDetailSerializer(instance=post)
+        
         return Response(serializer.data)
