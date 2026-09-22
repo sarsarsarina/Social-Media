@@ -128,3 +128,17 @@ class RestrictListSerializer(serializers.ModelSerializer):
             'id',
             'username'
         ]
+
+
+class BlockListSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='blocked.username')
+    bio = serializers.CharField(source='blocked.userprofile.bio')
+    avatar = serializers.CharField(source='blocked.userprofile.avatar')
+
+    class Meta:
+        model = BlockUser
+        fields = [
+            'username',
+            'bio',
+            'avatar'
+        ]

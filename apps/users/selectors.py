@@ -48,39 +48,46 @@ def follow_request_exists(from_user, to_user):
     return request_exists
 
 
-def block_exists(blocker,blocked):
+def block_exists(blocker, blocked):
     block_exists = BlockUser.objects.filter(
-        blocker = blocker,
-        blocked = blocked
+        blocker=blocker,
+        blocked=blocked
     ).exists()
     return block_exists
 
 
 def is_blocked(user1, user2):
     is_blocked = BlockUser.objects.filter(
-        Q(blocker = user1, blocked = user2) | Q(blocker = user2, blocked = user1)
+        Q(blocker=user1, blocked=user2) | Q(blocker=user2, blocked=user1)
     ).exists()
     return is_blocked
 
 
 def followers_count(user_id):
     count = Follow.objects.filter(
-        following = user_id
+        following=user_id
     ).count()
     return count
 
 
 def following_count(user_id):
     count = Follow.objects.filter(
-        follower = user_id
+        follower=user_id
     ).count()
     return count
 
 
+def block_list(user):
+    block = BlockUser.objects.filter(
+        blocker=user
+    ).order_by('-created_at')
+    return block
+
+
 def restrict_exists(user, restricted_user):
     restrict_exists = RestrictUser.objects.filter(
-        user = user,
-        restricted_user = restricted_user
+        user=user,
+        restricted_user=restricted_user
     ).exists()
     return restrict_exists
 
