@@ -33,3 +33,27 @@ class CreatePostSerializer(serializers.Serializer):
         child=serializers.FileField(),
         required=False
     )
+    
+    
+class UpdatePostSerializer(serializers.Serializer):
+    caption = serializers.CharField(
+        required=False, allow_blank=True
+    )
+    visibility = serializers.ChoiceField(
+        choices=Post.Visibility.choices, required=False
+    )
+    comments_enabled = serializers.BooleanField(
+        required=False
+    )
+    new_images = serializers.ListField(
+        child=serializers.ImageField(),
+        required=False
+    )
+    new_videos = serializers.ListField(
+        child=serializers.FileField(),
+        required=False
+    )
+    remove_media_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        required=False
+    )

@@ -6,8 +6,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
 
 from .selectors import my_posts
-from .services import create_post
-from .serializers import MyPostSerializer, CreatePostSerializer
+from .services import create_post, update_post
+from .serializers import MyPostSerializer, CreatePostSerializer, UpdatePostSerializer
 from .paginations import PostListPagination
  
 class MyPostsView(APIView):
@@ -36,5 +36,24 @@ class CreatePostView(APIView):
 
         response_serializer = MyPostSerializer(post)
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+    
+    
+class UpdatePostView(APIView):
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+    
+    def patch(self, request, post_id):
+            serializer = UpdatePostSerializer(data=request.data)
+            
+            if not serializer.is_valid():
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+            post = update_post(request.user, post_id, serializer.validated_data)
+            
+            serializer = MyPostSerializer(instance=post)
+            
+            return Response(serializer.data)
+
+    
     
     
