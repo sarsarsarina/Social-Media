@@ -36,4 +36,5 @@ urlpatterns = [
     path('unblock/',views.UnblockUserView.as_view(), name='unblock_user'),
     path('restrict/<int:user_id>/', views.RestrictUserView.as_view(), name='restrict_user'),
     path('unrestrict/<int:user_id>/', views.UnrestrictUserView.as_view(), name='unrestrict_user'),
+    path('restrict/list/', views.RestrictListView.as_view(), name='restrict_list'),
 ]

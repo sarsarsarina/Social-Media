@@ -16,6 +16,7 @@ from .serializers import (
     FollowingListSerializer,
     FollowRequestSerializer,
     BlockUserSerializer,
+    RestrictListSerializer,
     BlockListSerializer
 )
 
@@ -38,8 +39,11 @@ from .services import (
     unblock_user,
 )
 
+from .selectors import get_profile_by_user, followers_list, following_list, restrict_list
+from .paginations import StandardListPagination
 from .selectors import get_profile_by_user, followers_list, following_list, block_list
-from .paginations import FollowersListPagination, BlockListPagination
+from .paginations import StandardListPagination, BlockListPagination
+
 
 @extend_schema(request=RegisterSerializer)
 class RegisterView(APIView):
@@ -52,6 +56,7 @@ class RegisterView(APIView):
         data = create_user(serializer.validated_data)
         return Response(data, status=status.HTTP_201_CREATED)
 
+
 @extend_schema(request=LoginSerializer)
 class LoginView(APIView):
     def post(self, request):
@@ -59,6 +64,7 @@ class LoginView(APIView):
         serializer.is_valid(raise_exception=True)
         data = login_user(**serializer.validated_data)
         return Response(data, status=status.HTTP_200_OK)
+
 
 @extend_schema(request=LogoutSerializer)
 class LogoutView(APIView):
@@ -69,6 +75,7 @@ class LogoutView(APIView):
         serializer.is_valid(raise_exception=True)
         data = logout_user(**serializer.validated_data)
         return Response(data, status=status.HTTP_200_OK)
+
 
 @extend_schema(request=UpdateProfileSerializer)
 class UpdateProfileView(APIView):
@@ -105,6 +112,7 @@ class UserProfileView(APIView):
         profile = get_user_profile(user_id, request.user)
         serializer = UserProfileSerializer(profile)
         return Response(serializer.data)
+
 
 @extend_schema(request=FollowUserSerializer)
 class FollowUserView(APIView):
@@ -150,7 +158,7 @@ class FollowersListView(APIView):
 
     def get(self, request):
         followers = followers_list(request.user)
-        paginator = FollowersListPagination()
+        paginator = StandardListPagination()
         page = paginator.paginate_queryset(followers, request)
         serializer = FollowersListSerializer(page, many=True)
 
@@ -162,7 +170,7 @@ class FollowingListView(APIView):
 
     def get(self, request):
         following = following_list(request.user)
-        paginator = FollowersListPagination()
+        paginator = StandardListPagination()
         page = paginator.paginate_queryset(following, request)
         serializer = FollowingListSerializer(page, many=True)
 
@@ -203,8 +211,8 @@ class UserFollowingCountView(APIView):
         count = get_following_count(user_id)
 
         return Response({'following_count': count}, status=status.HTTP_200_OK)
-    
-    
+
+
 @extend_schema(request=BlockUserSerializer)
 class BlockUserView(APIView):
     permission_classes = [IsAuthenticated]
@@ -250,6 +258,16 @@ class UnrestrictUserView(APIView):
         unrestrict_user(request.user, restricted_user)
 
         return Response({"message": "User unrestricted successfully."}, status=status.HTTP_200_OK)
+
+
+class RestrictListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        restricted_user = restrict_list(request.user)
+        paginator = StandardListPagination()
+        page = paginator.paginate_queryset(restricted_user, request)
+        serializer = RestrictListSerializer(page, many=True)
 
 
 class UnblockUserView(APIView):
