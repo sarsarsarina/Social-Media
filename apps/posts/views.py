@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
 
 from .selectors import my_posts
-from .services import create_post, update_post, delete_post, get_post_detail
+from .services import create_post, update_post, delete_post, get_post_detail, get_post_list
 from .serializers import MyPostSerializer, CreatePostSerializer, UpdatePostSerializer,PostDetailSerializer
 from .paginations import PostListPagination
  
@@ -73,3 +73,24 @@ class PostDetailView(APIView):
         serializer = PostDetailSerializer(instance=post)
         
         return Response(serializer.data)
+    
+    
+class PostListView(APIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = PostListPagination
+    
+    def get(self, request):
+        user_id = request.query_params.get('user_id')
+        ordering = request.query_params.get('ordering', '-created_at')
+        
+        posts = get_post_list(
+            user_id = user_id,
+            ordering = ordering
+        )
+        
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(posts, request)
+        
+        serializer = MyPostSerializer(page, many=True)
+        
+        return paginator.get_paginated_response(serializer.data)
