@@ -6,8 +6,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
 
 from .selectors import my_posts
-from .services import create_post, update_post, delete_post
-from .serializers import MyPostSerializer, CreatePostSerializer, UpdatePostSerializer
+from .services import create_post, update_post, delete_post, get_post_detail
+from .serializers import MyPostSerializer, CreatePostSerializer, UpdatePostSerializer,PostDetailSerializer
 from .paginations import PostListPagination
  
 class MyPostsView(APIView):
@@ -65,3 +65,11 @@ class DeletePostView(APIView):
     
     
     
+class PostDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, post_id):
+        post = get_post_detail(request.user, post_id)
+        serializer = PostDetailSerializer(instance=post)
+        
+        return Response(serializer.data)
