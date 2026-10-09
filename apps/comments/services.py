@@ -15,7 +15,7 @@ def create_comment(user, post_id, validated_data):
     if not post:
         raise NotFound("Post not found")
 
-    if post.comments_enabled:
+    if not post.comments_enabled:
         raise ValidationError("Comments are disabled  for this post")
 
     parent = None
