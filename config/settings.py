@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'apps.users',
     'apps.posts',
     'drf_spectacular',
+    'apps.comments',
 ]
 
 MIDDLEWARE = [
