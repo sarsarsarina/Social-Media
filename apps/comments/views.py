@@ -44,6 +44,9 @@ class DeleteCommentView(APIView):
     def delete(self, request, comment_id):
         delete_comment(request.user, comment_id)
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "Comment deleted successfully."}, status=status.HTTP_200_OK)
+
+
+    
 
 
