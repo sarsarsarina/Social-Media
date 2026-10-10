@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'apps.posts',
     'drf_spectacular',
     'apps.comments',
+    'apps.likes',
 ]
 
 MIDDLEWARE = [
