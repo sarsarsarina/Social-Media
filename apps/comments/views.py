@@ -4,8 +4,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import CommentSerializer, CreateCommentSerializer
-from .services import create_comment
+from .serializers import CommentSerializer, CreateCommentSerializer, UpdateCommentSerializer
+from .services import create_comment, update_comment
 
 
 class CreateCommentView(APIView):
@@ -21,3 +21,18 @@ class CreateCommentView(APIView):
 
         response_serializer = CommentSerializer(comment)
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
+
+class UpdateCommentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, comment_id):
+        serializer = UpdateCommentSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        comment = update_comment(request.user, comment_id, serializer.validated_data)
+
+        response_serializer = CommentSerializer(comment)
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
