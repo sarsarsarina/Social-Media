@@ -78,7 +78,7 @@ def delete_comment(user, comment_id):
         )
 
 
-def get_Post_comment(post_id, ordering='-created_at'):
+def get_post_comments(post_id, ordering='-created_at'):
     post = get_post_by_id(post_id)
 
     if not post:
