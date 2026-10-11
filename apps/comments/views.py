@@ -4,8 +4,15 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import CommentSerializer, CreateCommentSerializer, UpdateCommentSerializer
-from .services import create_comment, update_comment, delete_comment
+from .paginations import CommentListPagination
+from .serializers import (
+    CommentSerializer, 
+    CreateCommentSerializer, 
+    UpdateCommentSerializer,
+    PostCommentsFilterSerializer,
+    PostCommentSerializer,
+    )
+from .services import create_comment, update_comment, delete_comment, get_post_comments
 
 
 class CreateCommentView(APIView):
@@ -47,6 +54,18 @@ class DeleteCommentView(APIView):
         return Response({"message": "Comment deleted successfully."}, status=status.HTTP_200_OK)
 
 
-    
+class PostCommentsView(APIView):
+    permission_classes = [IsAuthenticated]
+    parser_classes = CommentListPagination
 
+    def get(self, request, post_id):
+        filter_serializer = PostCommentsFilterSerializer(data=request.query_params)
+        filter_serializer.is_valid(raise_exception=True)
 
+        comments = get_post_comments(post_id, ordering=filter_serializer.validated_data['ordering'],)
+
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(comments, request, view=self)
+        serializer = PostCommentSerializer(page, many=True)
+
+        return paginator.get_paginated_response(serializer.data)
