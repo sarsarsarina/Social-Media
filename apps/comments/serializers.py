@@ -55,3 +55,22 @@ class PostCommentSerializer(serializers.ModelSerializer):
             'created_at',
             'replies_count',
         ]
+
+
+class ReplySerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+    replies_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = [
+            'id',
+            'post',
+            'user',
+            'username',
+            'parent',
+            'content',
+            'is_edited',
+            'created_at',
+            'replies_count',
+        ]
