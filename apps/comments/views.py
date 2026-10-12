@@ -6,13 +6,20 @@ from rest_framework.views import APIView
 
 from .paginations import CommentListPagination
 from .serializers import (
-    CommentSerializer, 
-    CreateCommentSerializer, 
-    UpdateCommentSerializer,
-    PostCommentsFilterSerializer,
+    CommentSerializer,
+    CreateCommentSerializer,
     PostCommentSerializer,
-    )
-from .services import create_comment, update_comment, delete_comment, get_post_comments
+    PostCommentsFilterSerializer,
+    ReplySerializer,
+    UpdateCommentSerializer,
+)
+from .services import (
+    create_comment,
+    delete_comment,
+    get_comment_replies,
+    get_post_comments,
+    update_comment,
+)
 
 
 class CreateCommentView(APIView):
@@ -69,3 +76,20 @@ class PostCommentsView(APIView):
         serializer = PostCommentSerializer(page, many=True)
 
         return paginator.get_paginated_response(serializer.data)
+
+
+class CommentRepliesView(APIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = CommentListPagination
+
+    def get(self, request, comment_id):
+        comment, replies = get_comment_replies(comment_id)
+
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(replies, request)
+        serializer = ReplySerializer(page, many=True)
+
+        response = paginator.get_paginated_response(serializer.data)
+        response.data['comment'] = CommentSerializer(comment).data
+
+        return response
