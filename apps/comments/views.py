@@ -56,7 +56,7 @@ class DeleteCommentView(APIView):
 
 class PostCommentsView(APIView):
     permission_classes = [IsAuthenticated]
-    parser_classes = CommentListPagination
+    pagination_class  = CommentListPagination
 
     def get(self, request, post_id):
         filter_serializer = PostCommentsFilterSerializer(data=request.query_params)
