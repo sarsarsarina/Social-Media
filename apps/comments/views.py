@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .serializers import CommentSerializer, CreateCommentSerializer, UpdateCommentSerializer
-from .services import create_comment, update_comment
+from .services import create_comment, update_comment, delete_comment
 
 
 class CreateCommentView(APIView):
@@ -36,3 +36,17 @@ class UpdateCommentView(APIView):
 
         response_serializer = CommentSerializer(comment)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
+
+
+class DeleteCommentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, comment_id):
+        delete_comment(request.user, comment_id)
+
+        return Response({"message": "Comment deleted successfully."}, status=status.HTTP_200_OK)
+
+
+    
+
+

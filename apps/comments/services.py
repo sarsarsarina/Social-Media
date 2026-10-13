@@ -1,5 +1,6 @@
 from django.db import transaction
 from django.db.models import F
+from django.db.models.functions import Greatest
 from rest_framework.exceptions import NotFound, ValidationError
 
 from apps.posts.models import Post
@@ -51,3 +52,25 @@ def update_comment(user, comment_id, validated_data):
     comment.save(update_fields=['content', 'is_edited', 'updated_at'])
 
     return comment
+
+
+def delete_comment(user, comment_id):
+    comment = get_comment_by_id(comment_id)
+
+    if not comment:
+        raise NotFound("Comment not found")
+
+    is_author = comment.user_id == user.id
+    is_post_owner = comment.post.owner_id == user.id
+
+    if not (is_author or is_post_owner):
+        raise NotFound("Comment not found")
+
+    with transaction.atomic():
+        post_id = comment.post_id
+        _, deleted_per_model = comment.delete()
+        deleted_comments = deleted_per_model.get(Comment._meta.label, 0)
+
+        Post.objects.filter(id=post_id).update(
+            comments_count=Greatest(F('comments_count') - deleted_comments, 0)
+        )
