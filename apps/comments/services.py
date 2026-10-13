@@ -7,7 +7,9 @@ from apps.posts.models import Post
 from apps.posts.selectors import get_post_by_id
 
 from .models import Comment
-from .selectors import get_comment_by_id
+from .selectors import get_comment_by_id, post_comments_list
+
+ALLOWED_COMMENT_ORDERINGS = ('-created_at', 'created_at')
 
 
 def create_comment(user, post_id, validated_data):
@@ -74,3 +76,12 @@ def delete_comment(user, comment_id):
         Post.objects.filter(id=post_id).update(
             comments_count=Greatest(F('comments_count') - deleted_comments, 0)
         )
+
+
+def get_post_comments(post_id, ordering='-created_at'):
+    post = get_post_by_id(post_id)
+
+    if not post:
+        raise NotFound("Post not found")
+
+    return post_comments_list(post_id, ordering)
