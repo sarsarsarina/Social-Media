@@ -19,3 +19,7 @@ class CommentSerializer(serializers.ModelSerializer):
             'is_edited',
             'created_at',
         ]
+
+
+class UpdateCommentSerializer(serializers.Serializer):
+    content = serializers.CharField()

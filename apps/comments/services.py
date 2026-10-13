@@ -38,3 +38,16 @@ def create_comment(user, post_id, validated_data):
         Post.objects.filter(id=post_id).update(comments_count=F('comments_count') + 1)
 
     return comment
+
+
+def update_comment(user, comment_id, validated_data):
+    comment = get_comment_by_id(comment_id)
+
+    if not comment or comment.user != user:
+        raise NotFound("Comment not found")
+
+    comment.content = validated_data['content']
+    comment.is_edited = True
+    comment.save(update_fields=['content', 'is_edited', 'updated_at'])
+
+    return comment
