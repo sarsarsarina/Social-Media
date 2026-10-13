@@ -7,7 +7,7 @@ from apps.posts.models import Post
 from apps.posts.selectors import get_post_by_id
 
 from .models import Comment
-from .selectors import get_comment_by_id, post_comments_list
+from .selectors import get_comment_by_id, post_comments_list, comment_replies
 
 ALLOWED_COMMENT_ORDERINGS = ('-created_at', 'created_at')
 
@@ -85,3 +85,13 @@ def get_post_comments(post_id, ordering='-created_at'):
         raise NotFound("Post not found")
 
     return post_comments_list(post_id, ordering)
+
+
+def get_comment_replies(comment_id):
+    comment = get_comment_by_id(comment_id)
+
+    if not comment:
+        raise NotFound("Comment not found")
+
+    return comment, comment_replies(comment_id)
+

@@ -16,3 +16,12 @@ def post_comments_list(post_id, ordering='-created_at'):
         .order_by(ordering)
     )
 
+
+def comment_replies(comment_id):
+    return (
+        Comment.objects
+        .filter(parent_id=comment_id)
+        .select_related('user')
+        .annotate(replies_count=Count('replies'))
+        .order_by('created_at')
+    )
