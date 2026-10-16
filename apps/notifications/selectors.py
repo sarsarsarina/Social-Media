@@ -8,3 +8,13 @@ def notification_list(user):
         .select_related('actor')
         .order_by('-created_at')
     )
+
+
+def get_notification_by_id(notification_id):
+    return (
+        Notification.objects
+        .select_related('actor')
+        .filter(id=notification_id)
+        .first()
+    )
+
