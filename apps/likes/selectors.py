@@ -19,3 +19,8 @@ def get_like(user, post):
         post=post
     ).first()
     return like
+
+
+def get_likes_list(post):
+    likes = Like.objects.select_related("user").filter(post=post)
+    return likes
