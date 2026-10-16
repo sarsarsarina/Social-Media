@@ -1,5 +1,21 @@
-from .selectors import notification_list
+from rest_framework.exceptions import NotFound
+
+from .selectors import get_notification_by_id, notification_list
 
 
 def get_notification_list(user):
     return notification_list(user)
+
+
+def mark_notification_as_read(user, notification_id):
+    notification = get_notification_by_id(notification_id)
+
+    if not notification or notification.recipient_id != user.id:
+        raise NotFound("Notification not found")
+
+    if not notification.is_read:
+        notification.is_read = True
+        notification.save(update_fields=['is_read'])
+
+    return notification
+
