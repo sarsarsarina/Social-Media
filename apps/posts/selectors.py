@@ -17,3 +17,11 @@ def post_list(user_id=None, ordering='-created_at'):
     posts = posts.order_by(ordering)
 
     return posts
+
+
+def explore_posts():
+    posts = Post.objects.filter(
+        visibility=Post.Visibility.PUBLIC
+    ).order_by('-created_at')
+
+    return posts
