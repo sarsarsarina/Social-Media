@@ -18,3 +18,8 @@ def get_notification_by_id(notification_id):
         .first()
     )
 
+
+def unread_notifications(user):
+    return Notification.objects.filter(recipient=user, is_read=False)
+
+
