@@ -1,4 +1,4 @@
-from .models import Post
+from .models import Post, SavedPost
 
 def my_posts(user):
     posts = Post.objects.filter(owner=user).order_by('-created_at')
@@ -25,3 +25,11 @@ def explore_posts():
     ).order_by('-created_at')
 
     return posts
+
+
+def is_post_saved(user, post):
+    saved_post = SavedPost.objects.filter(
+        user=user,
+        post=post
+    ).exists()
+    return saved_post

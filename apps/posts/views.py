@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
 
-from .selectors import my_posts, explore_posts
-from .services import create_post, update_post, delete_post, get_post_detail, get_post_list
+from .selectors import my_posts, explore_posts, get_post_by_id
+from .services import create_post, update_post, delete_post, get_post_detail, get_post_list, save_post
 from .serializers import MyPostSerializer, CreatePostSerializer, UpdatePostSerializer, PostDetailSerializer
 from .paginations import PostListPagination
 from apps.users.paginations import StandardListPagination
@@ -108,3 +108,16 @@ class ExploreView(APIView):
         serializer = PostDetailSerializer(page, many=True)
 
         return paginator.get_paginated_response(serializer.data)
+
+
+class SavedPostView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self,request, post_id):
+        post = get_post_by_id(post_id)
+
+        if post is None:
+            return Response({"message": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        saved_post = save_post(request.user, post)
+        return Response({"message": "Post saved successfully."}, status=status.HTTP_201_CREATED)

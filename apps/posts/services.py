@@ -1,7 +1,7 @@
 from django.db import transaction
-from .models import Post, PostMedia
-from .selectors import get_post_by_id, post_list
-from rest_framework.exceptions import NotFound
+from .models import Post, PostMedia, SavedPost
+from .selectors import get_post_by_id, post_list, is_post_saved
+from rest_framework.exceptions import NotFound, ValidationError
 
 
 def create_post(owner, validated_data):
@@ -126,3 +126,19 @@ def get_post_list(user_id=None, ordering='-created_at'):
     
     return posts
 
+
+def save_post(user, post):
+    already_saved = is_post_saved(user, post)
+
+    if already_saved:
+        raise ValidationError("This post has already been saved.")
+
+    return create_saved_post(user, post)
+
+
+def create_saved_post(user, post):
+    saved_post = SavedPost.objects.create(
+        user=user,
+        post=post
+    )
+    return saved_post
