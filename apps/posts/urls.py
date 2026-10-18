@@ -11,4 +11,5 @@ urlpatterns = [
         path('explore/', views.ExploreView.as_view(), name='explore'),
         path('saved/post/<int:post_id>/', views.SavedPostView.as_view(), name='saved_post'),
         path('unsaved/post/<int:post_id>/', views.UnsavePostView.as_view(), name='unsaved_post'),
+        path('saved/posts/list/', views.SavedPostsList.as_view(), name='saved_posts_list')
 ]

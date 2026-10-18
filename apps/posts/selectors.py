@@ -35,9 +35,15 @@ def is_post_saved(user, post):
     return saved_post
 
 
-def get_saved_post(user,post):
+def get_saved_post(user, post):
     saved_post = SavedPost.objects.filter(
         user=user,
         post=post
     ).first()
     return saved_post
+
+
+def get_saved_posts(user):
+    return Post.objects.filter(
+        saved_posts__user=user
+    ).order_by('-saved_posts__created_at')
