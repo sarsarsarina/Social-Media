@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'apps.comments',
     'apps.likes',
+    'apps.notifications',
 ]
 
 MIDDLEWARE = [
