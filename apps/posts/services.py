@@ -1,7 +1,8 @@
 from django.db import transaction
+from rest_framework.exceptions import NotFound, ValidationError
+
 from .models import Post, PostMedia
-from .selectors import get_post_by_id, post_list
-from rest_framework.exceptions import NotFound
+from .selectors import feed_posts, get_post_by_id, post_list
 
 
 def create_post(owner, validated_data):
@@ -125,4 +126,15 @@ def get_post_list(user_id=None, ordering='-created_at'):
     )
     
     return posts
+
+
+FEED_ORDERINGS = ['-created_at', 'created_at', '-likes_count']
+
+
+def get_feed(user, ordering='-created_at'):
+    if ordering not in FEED_ORDERINGS:
+        raise ValidationError(f"ordering must be one of {FEED_ORDERINGS}")
+
+    return feed_posts(user, ordering)
+
 

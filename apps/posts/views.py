@@ -1,15 +1,29 @@
 from django.shortcuts import render
 from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from .selectors import my_posts
-from .services import create_post, update_post, delete_post, get_post_detail, get_post_list
-from .serializers import MyPostSerializer, CreatePostSerializer, UpdatePostSerializer,PostDetailSerializer
 from .paginations import PostListPagination
- 
+from .selectors import feed_posts, my_posts
+from .serializers import (
+    CreatePostSerializer,
+    FeedPostSerializer,
+    MyPostSerializer,
+    PostDetailSerializer,
+    UpdatePostSerializer,
+)
+from .services import (
+    create_post,
+    delete_post,
+    get_feed,
+    get_post_detail,
+    get_post_list,
+    update_post,
+)
+
+
 class MyPostsView(APIView):
     permission_classes = [IsAuthenticated]
     
@@ -94,3 +108,21 @@ class PostListView(APIView):
         serializer = MyPostSerializer(page, many=True)
         
         return paginator.get_paginated_response(serializer.data)
+
+
+class FeedView(APIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = PostListPagination
+
+    def get(self, request):
+        ordering = request.query_params.get('ordering', '-created_at')
+
+        posts = get_feed(request.user, ordering)
+
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(posts, request)
+        serializer = FeedPostSerializer(page, many=True)
+
+        return paginator.get_paginated_response(serializer.data)
+
+    

@@ -26,4 +26,5 @@ urlpatterns = [
     path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('posts/', include('apps.comments.urls')),
     path('notifications/', include('apps.notifications.urls')),
+    path('likes/', include('apps.likes.urls')),
 ]
