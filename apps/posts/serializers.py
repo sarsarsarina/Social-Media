@@ -85,3 +85,26 @@ class PostDetailSerializer(serializers.ModelSerializer):
             'created_at', 
             'media'    
         ]
+
+
+class FeedPostSerializer(serializers.ModelSerializer):
+    owner_id = serializers.IntegerField(source='owner.id')
+    username = serializers.CharField(source='owner.username')
+    media = PostMediaSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Post
+        fields = [
+            'id',
+            'owner_id',
+            'username',
+            'caption',
+            'visibility',
+            'comments_enabled',
+            'likes_count',
+            'comments_count',
+            'created_at',
+            'media',
+        ]
+
+        
