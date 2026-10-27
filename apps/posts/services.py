@@ -4,6 +4,7 @@ from .models import Post, PostMedia, SavedPost
 from .selectors import (
     feed_posts,
     get_post_by_id,
+    get_saved_post,
     is_post_saved,
     post_list,
 )
@@ -155,6 +156,20 @@ def create_saved_post(user, post):
         user=user,
         post=post,
     )
+
+
+def unsave_post(user, post):
+    saved_post = get_saved_post(user, post)
+
+    if saved_post is None:
+        raise ValidationError("This post has not been saved.")
+
+    return delete_saved_post(saved_post)
+
+
+def delete_saved_post(saved_post):
+    delete = saved_post.delete()
+    return delete
 
 
 FEED_ORDERINGS = ['-created_at', 'created_at', '-likes_count']

@@ -39,6 +39,14 @@ def is_post_saved(user, post):
     return saved_post
 
 
+def get_saved_post(user, post):
+    saved_post = SavedPost.objects.filter(
+        user=user,
+        post=post
+    ).first()
+    return saved_post
+
+
 def feed_posts(user, ordering='-created_at'):
     accepted_follows = Follow.objects.filter(
         follower=user,
