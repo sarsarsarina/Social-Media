@@ -11,3 +11,11 @@ def like_exists(user, post):
         post=post
     ).exists()
     return like_exists
+
+
+def get_like(user, post):
+    like = Like.objects.filter(
+        user=user,
+        post=post
+    ).first()
+    return like
