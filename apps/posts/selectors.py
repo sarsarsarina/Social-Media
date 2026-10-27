@@ -7,13 +7,14 @@ def my_posts(user):
     posts = Post.objects.filter(owner=user).order_by('-created_at')
     return posts
 
+
 def get_post_by_id(post_id):
     return Post.objects.filter(id=post_id).first()
 
 
 def post_list(user_id=None, ordering='-created_at'):
     posts = Post.objects.all()
-    
+
     if user_id:
         posts = posts.filter(owner_id=user_id)
 
@@ -22,10 +23,18 @@ def post_list(user_id=None, ordering='-created_at'):
     return posts
 
 
+def explore_posts():
+    posts = Post.objects.filter(
+        visibility=Post.Visibility.PUBLIC
+    ).order_by('-created_at')
+
+    return posts
+
+
 def feed_posts(user, ordering='-created_at'):
     accepted_follows = Follow.objects.filter(
-        follwer=user,
-        status=Follow.status.ACCEPTED
+        follower=user,
+        status=Follow.Status.ACCEPTED
     )
     following_ids = accepted_follows.values('following_id')
     close_friend_ids = accepted_follows.filter(is_close_friend=True).values('following_id')
