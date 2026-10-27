@@ -1,11 +1,16 @@
 from django.shortcuts import render
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .paginations import NotificationListPagination
 from .serializers import NotificationSerializer
-from .services import get_notification_list, mark_notification_as_read
+from .services import (
+    get_notification_list,
+    mark_all_notifications_as_read,
+    mark_notification_as_read,
+)
 
 
 class NotificationsListView(APIView):
@@ -29,5 +34,17 @@ class MarkNotificationAsReadView(APIView):
         serializer = NotificationSerializer(instance=notification)
 
         return Response(serializer.data)
+
+
+class MarkAllNotificationsAsReadView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request):
+        updated_count = mark_all_notifications_as_read(request.user)
+
+        return Response(
+            {"message": "All notifications marked as read.", "updated_count": updated_count},
+            status=status.HTTP_200_OK
+        )
 
     
