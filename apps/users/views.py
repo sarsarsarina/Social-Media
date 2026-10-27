@@ -268,6 +268,7 @@ class RestrictListView(APIView):
         paginator = StandardListPagination()
         page = paginator.paginate_queryset(restricted_user, request)
         serializer = RestrictListSerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
 class UnblockUserView(APIView):
