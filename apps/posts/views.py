@@ -8,6 +8,7 @@ from .selectors import (
     my_posts,
     explore_posts,
     get_post_by_id,
+    get_saved_posts,
 )
 from .services import (
     create_post,
@@ -152,6 +153,19 @@ class UnsavePostView(APIView):
 
         unsave_post(request.user, post)
         return Response({"message": "Post unsaved successfully."}, status=status.HTTP_200_OK)
+
+
+class SavedPostsList(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        saved_posts = get_saved_posts(request.user)
+
+        paginator = StandardListPagination()
+        page = paginator.paginate_queryset(saved_posts, request)
+
+        serializer = PostDetailSerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
 class FeedView(APIView):

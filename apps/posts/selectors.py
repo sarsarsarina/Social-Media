@@ -47,6 +47,12 @@ def get_saved_post(user, post):
     return saved_post
 
 
+def get_saved_posts(user):
+    return Post.objects.filter(
+        saved_posts__user=user
+    ).order_by('-saved_posts__created_at')
+
+
 def feed_posts(user, ordering='-created_at'):
     accepted_follows = Follow.objects.filter(
         follower=user,
@@ -72,3 +78,4 @@ def feed_posts(user, ordering='-created_at'):
         .order_by(ordering)
     )
     return posts
+
