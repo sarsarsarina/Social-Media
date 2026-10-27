@@ -4,15 +4,22 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .selectors import explore_posts, feed_posts, my_posts
+from .selectors import (
+    my_posts,
+    explore_posts,
+    get_post_by_id,
+)
+
 from .services import (
     create_post,
     update_post,
     delete_post,
     get_post_detail,
     get_post_list,
+    save_post,
     get_feed,
 )
+
 from .serializers import (
     MyPostSerializer,
     CreatePostSerializer,
@@ -20,6 +27,7 @@ from .serializers import (
     PostDetailSerializer,
     FeedPostSerializer,
 )
+
 from .paginations import PostListPagination
 from apps.users.paginations import StandardListPagination
 
@@ -122,6 +130,19 @@ class ExploreView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
 
+class SavedPostView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self,request, post_id):
+        post = get_post_by_id(post_id)
+
+        if post is None:
+            return Response({"message": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        saved_post = save_post(request.user, post)
+        return Response({"message": "Post saved successfully."}, status=status.HTTP_201_CREATED)
+
+
 class FeedView(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = PostListPagination
@@ -136,3 +157,4 @@ class FeedView(APIView):
         serializer = FeedPostSerializer(page, many=True)
 
         return paginator.get_paginated_response(serializer.data)
+

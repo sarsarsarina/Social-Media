@@ -1,8 +1,12 @@
 from django.db import transaction
 from rest_framework.exceptions import NotFound, ValidationError
-
-from .models import Post, PostMedia
-from .selectors import feed_posts, get_post_by_id, post_list
+from .models import Post, PostMedia, SavedPost
+from .selectors import (
+    feed_posts,
+    get_post_by_id,
+    is_post_saved,
+    post_list,
+)
 
 
 def create_post(owner, validated_data):
@@ -11,34 +15,38 @@ def create_post(owner, validated_data):
     comments_enabled = validated_data.get('comments_enabled', True)
     images = validated_data.get('images', [])
     videos = validated_data.get('videos', [])
-    
+
     with transaction.atomic():
         post = Post.objects.create(
             owner=owner,
             caption=caption,
             visibility=visibility,
-            comments_enabled=comments_enabled
+            comments_enabled=comments_enabled,
         )
 
         media_objects = []
         order = 0
 
         for image in images:
-            media_objects.append(PostMedia(
-                post=post,
-                file=image,
-                media_type=PostMedia.MediaType.IMAGE,
-                order=order
-            ))
+            media_objects.append(
+                PostMedia(
+                    post=post,
+                    file=image,
+                    media_type=PostMedia.MediaType.IMAGE,
+                    order=order,
+                )
+            )
             order += 1
 
         for video in videos:
-            media_objects.append(PostMedia(
-                post=post,
-                file=video,
-                media_type=PostMedia.MediaType.VIDEO,
-                order=order
-            ))
+            media_objects.append(
+                PostMedia(
+                    post=post,
+                    file=video,
+                    media_type=PostMedia.MediaType.VIDEO,
+                    order=order,
+                )
+            )
             order += 1
 
         if media_objects:
@@ -70,7 +78,10 @@ def update_post(user, post_id, validated_data):
         remove_media_ids = validated_data.get('remove_media_ids', [])
 
         if remove_media_ids:
-            PostMedia.objects.filter(id__in=remove_media_ids,post=post).delete()
+            PostMedia.objects.filter(
+                id__in=remove_media_ids,
+                post=post,
+            ).delete()
 
         last_media = post.media.order_by('-order').first()
         order = last_media.order + 1 if last_media else 0
@@ -78,21 +89,25 @@ def update_post(user, post_id, validated_data):
         media_objects = []
 
         for image in new_images:
-            media_objects.append(PostMedia(
-                post=post,
-                file=image,
-                media_type=PostMedia.MediaType.IMAGE,
-                order=order
-            ))
+            media_objects.append(
+                PostMedia(
+                    post=post,
+                    file=image,
+                    media_type=PostMedia.MediaType.IMAGE,
+                    order=order,
+                )
+            )
             order += 1
 
         for video in new_videos:
-            media_objects.append(PostMedia(
-                post=post,
-                file=video,
-                media_type=PostMedia.MediaType.VIDEO,
-                order=order
-            ))
+            media_objects.append(
+                PostMedia(
+                    post=post,
+                    file=video,
+                    media_type=PostMedia.MediaType.VIDEO,
+                    order=order,
+                )
+            )
             order += 1
 
         if media_objects:
@@ -108,24 +123,38 @@ def delete_post(user, post_id):
         raise NotFound("Post not found")
 
     post.delete()
-    
+
 
 def get_post_detail(user, post_id):
     post = get_post_by_id(post_id)
-    
+
     if not post or post.owner != user:
         raise NotFound("Post not found")
-    
+
     return post
 
 
 def get_post_list(user_id=None, ordering='-created_at'):
-    posts = post_list(
-        user_id = user_id,
-        ordering = ordering
+    return post_list(
+        user_id=user_id,
+        ordering=ordering,
     )
-    
-    return posts
+
+
+def save_post(user, post):
+    already_saved = is_post_saved(user, post)
+
+    if already_saved:
+        raise ValidationError("This post has already been saved.")
+
+    return create_saved_post(user, post)
+
+
+def create_saved_post(user, post):
+    return SavedPost.objects.create(
+        user=user,
+        post=post,
+    )
 
 
 FEED_ORDERINGS = ['-created_at', 'created_at', '-likes_count']
@@ -133,8 +162,8 @@ FEED_ORDERINGS = ['-created_at', 'created_at', '-likes_count']
 
 def get_feed(user, ordering='-created_at'):
     if ordering not in FEED_ORDERINGS:
-        raise ValidationError(f"ordering must be one of {FEED_ORDERINGS}")
+        raise ValidationError(
+            f"ordering must be one of {FEED_ORDERINGS}"
+        )
 
     return feed_posts(user, ordering)
-
-

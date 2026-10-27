@@ -9,5 +9,6 @@ urlpatterns = [
         path('<int:post_id>/detail/', views.PostDetailView.as_view(), name='post_detail'),
         path('', views.PostListView.as_view(), name='post_list'),
         path('explore/', views.ExploreView.as_view(), name='explore'),
+        path('saved/post/<int:post_id>/', views.SavedPostView.as_view(), name='saved_post'),
         path('feed/', views.FeedView.as_view(), name='feed'),
 ]

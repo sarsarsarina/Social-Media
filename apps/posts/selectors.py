@@ -1,6 +1,6 @@
+from .models import Post, SavedPost
 from django.db.models import Q
 from apps.users.models import BlockUser, Follow
-from .models import Post
 
 
 def my_posts(user):
@@ -29,6 +29,14 @@ def explore_posts():
     ).order_by('-created_at')
 
     return posts
+
+
+def is_post_saved(user, post):
+    saved_post = SavedPost.objects.filter(
+        user=user,
+        post=post
+    ).exists()
+    return saved_post
 
 
 def feed_posts(user, ordering='-created_at'):
