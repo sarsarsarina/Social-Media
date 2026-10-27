@@ -23,3 +23,5 @@ def unread_notifications(user):
     return Notification.objects.filter(recipient=user, is_read=False)
 
 
+def unread_notifications_count(user):
+    return unread_notifications(user).count()

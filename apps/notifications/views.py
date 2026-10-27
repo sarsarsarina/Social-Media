@@ -8,6 +8,7 @@ from .paginations import NotificationListPagination
 from .serializers import NotificationSerializer
 from .services import (
     get_notification_list,
+    get_unread_notifications_count,
     mark_all_notifications_as_read,
     mark_notification_as_read,
 )
@@ -47,4 +48,11 @@ class MarkAllNotificationsAsReadView(APIView):
             status=status.HTTP_200_OK
         )
 
-    
+
+class UnreadNotificationsCountView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        count = get_unread_notifications_count(request.user)
+
+        return Response({'unread_count': count}, status=status.HTTP_200_OK)

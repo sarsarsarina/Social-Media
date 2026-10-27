@@ -1,6 +1,11 @@
 from rest_framework.exceptions import NotFound
 
-from .selectors import get_notification_by_id, notification_list, unread_notifications
+from .selectors import (
+    get_notification_by_id,
+    notification_list,
+    unread_notifications,
+    unread_notifications_count,
+)
 
 
 def get_notification_list(user):
@@ -25,3 +30,5 @@ def mark_all_notifications_as_read(user):
     return updated_count
 
 
+def get_unread_notifications_count(user):
+    return unread_notifications_count(user)
