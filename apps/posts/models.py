@@ -54,3 +54,25 @@ class PostMedia(models.Model):
     
     def __str__(self):
         return f"{self.post} - {self.media_type} ({self.order})"
+
+
+class SavedPost(models.Model):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'post'],
+                name = 'unique_saved_post_per_user'
+            )
+        ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='saved_posts'
+    )
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        related_name='saved_posts',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
