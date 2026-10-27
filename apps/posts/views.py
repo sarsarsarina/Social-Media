@@ -1,12 +1,32 @@
 from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from .selectors import my_posts, explore_posts, get_post_by_id, get_saved_posts
-from .services import create_post, update_post, delete_post, get_post_detail, get_post_list, save_post, unsave_post
-from .serializers import MyPostSerializer, CreatePostSerializer, UpdatePostSerializer, PostDetailSerializer
+from .selectors import (
+    my_posts,
+    explore_posts,
+    get_post_by_id,
+    get_saved_posts,
+)
+from .services import (
+    create_post,
+    update_post,
+    delete_post,
+    get_post_detail,
+    get_post_list,
+    save_post,
+    unsave_post,
+    get_feed,
+)
+from .serializers import (
+    MyPostSerializer,
+    CreatePostSerializer,
+    UpdatePostSerializer,
+    PostDetailSerializer,
+    FeedPostSerializer,
+)
 from .paginations import PostListPagination
 from apps.users.paginations import StandardListPagination
 
@@ -112,7 +132,7 @@ class ExploreView(APIView):
 class SavedPostView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self,request, post_id):
+    def post(self, request, post_id):
         post = get_post_by_id(post_id)
 
         if post is None:
@@ -147,3 +167,18 @@ class SavedPostsList(APIView):
         serializer = PostDetailSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
 
+
+class FeedView(APIView):
+    permission_classes = [IsAuthenticated]
+    pagination_class = PostListPagination
+
+    def get(self, request):
+        ordering = request.query_params.get('ordering', '-created_at')
+
+        posts = get_feed(request.user, ordering)
+
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(posts, request)
+        serializer = FeedPostSerializer(page, many=True)
+
+        return paginator.get_paginated_response(serializer.data)
