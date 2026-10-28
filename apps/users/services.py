@@ -12,10 +12,12 @@ from .selectors import (
     followers_count,
     following_count,
     restrict_exists,
+    remove_follows,
+    delete_follow_requests,
 )
 from rest_framework.exceptions import AuthenticationFailed, ValidationError, NotFound
 from .models import UserProfile, Follow, FollowRequest, BlockUser, RestrictUser
-from django.db.models import Q
+from django.db import transaction
 
 User = get_user_model()
 
@@ -107,8 +109,14 @@ def follow_user(follower, following):
     if follower == following:
         raise ValidationError("You can't follow yourself")
 
+    if is_blocked(follower, following):
+        raise ValidationError("You cannot follow this user.")
+
     if follow_exists(follower, following):
-        raise ValidationError('You already follow this user.')
+        raise ValidationError("You already follow this user.")
+
+    if following.is_private:
+        raise ValidationError("This user is private. Send a follow request instead.")
 
     return create_follow(follower, following)
 
@@ -122,6 +130,9 @@ def create_follow(follower, following):
 
 
 def unfollow_user(follower, following):
+    if follower == following:
+        raise ValidationError("You cannot unfollow yourself.")
+
     if not follow_exists(follower, following):
         raise ValidationError("You don't follow this user.")
 
@@ -133,11 +144,22 @@ def unfollow_user(follower, following):
 
 
 def follow_request(from_user, to_user):
+    if from_user == to_user:
+        raise ValidationError("You can't follow yourself.")
+
+    if is_blocked(from_user, to_user):
+        raise ValidationError("You cannot send a follow request to this user.")
+
+    if follow_exists(from_user, to_user):
+        raise ValidationError("You already follow this user.")
+
     if not to_user.is_private:
         return follow_user(from_user, to_user)
 
     if follow_request_exists(from_user, to_user):
-        raise ValidationError("You have already sent a follow request to this user.")
+        raise ValidationError(
+            "You have already sent a follow request to this user."
+        )
 
     return create_follow_request(from_user, to_user)
 
@@ -160,14 +182,16 @@ def get_following_count(user_id):
     return count
 
 
+@transaction.atomic
 def block_user(blocker, blocked):
     if blocker == blocked:
         raise ValidationError("You can't block yourself")
 
-    if block_exists(blocked, blocker):
+    if block_exists(blocker, blocked):
         raise ValidationError("You already blocked this user.")
 
-    remove_follows(blocked, blocker)
+    remove_follows(blocker, blocked)
+    delete_follow_requests(blocker, blocked)
 
     return create_block(blocker, blocked)
 
@@ -178,12 +202,6 @@ def create_block(blocker, blocked):
         blocked=blocked
     )
     return block
-
-
-def remove_follows(user1, user2):
-    Follow.objects.filter(
-        Q(follower=user1, following=user2) | Q(follower=user2, following=user1)
-    ).delete()
 
 
 def restrict_user(user, restricted_user):
@@ -216,8 +234,11 @@ def unrestrict_user(user, restricted_user):
 
 
 def unblock_user(blocker, blocked):
+    if blocker == blocked:
+        raise ValidationError("You cannot unblock yourself.")
+
     if not block_exists(blocker, blocked):
-        raise ValidationError("You don't block this user.")
+        raise ValidationError("You haven't blocked this user.")
 
     block = BlockUser.objects.get(
         blocker=blocker,

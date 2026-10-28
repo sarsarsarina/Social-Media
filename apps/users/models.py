@@ -74,6 +74,13 @@ class FollowRequest(models.Model):
 
 
 class BlockUser(models.Model):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["blocker", "blocked"],
+                name="unique_blocker_blocked",
+            ),
+        ]
     blocker = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
