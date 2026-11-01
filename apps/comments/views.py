@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -20,11 +19,16 @@ from .services import (
     get_post_comments,
     update_comment,
 )
+from drf_spectacular.utils import extend_schema
 
 
 class CreateCommentView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        request=CreateCommentSerializer,
+        responses={201: CommentSerializer},
+    )
     def post(self, request, post_id):
         serializer = CreateCommentSerializer(data=request.data)
 
@@ -40,6 +44,10 @@ class CreateCommentView(APIView):
 class UpdateCommentView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        request=UpdateCommentSerializer,
+        responses={200: CommentSerializer},
+    )
     def patch(self, request, comment_id):
         serializer = UpdateCommentSerializer(data=request.data)
 

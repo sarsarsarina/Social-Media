@@ -29,6 +29,7 @@ from .serializers import (
 )
 from .paginations import PostListPagination
 from apps.users.paginations import StandardListPagination
+from drf_spectacular.utils import extend_schema
 
 
 class MyPostsView(APIView):
@@ -46,6 +47,10 @@ class CreatePostView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
 
+    @extend_schema(
+        request=CreatePostSerializer,
+        responses={201: MyPostSerializer},
+    )
     def post(self, request):
         serializer = CreatePostSerializer(data=request.data)
 
@@ -62,6 +67,10 @@ class UpdatePostView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
 
+    @extend_schema(
+        request=UpdatePostSerializer,
+        responses={200: MyPostSerializer},
+    )
     def patch(self, request, post_id):
         serializer = UpdatePostSerializer(data=request.data)
 
